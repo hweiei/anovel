@@ -1,0 +1,35 @@
+{
+  "description": "片段池（语料）推荐字段（与 2.2 对齐）",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string"
+    },
+    "sent_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "oracle",
+        "distractor"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "text",
+    "sent_count",
+    "role"
+  ]
+}

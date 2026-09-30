@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文本混淆1.0</title>
+  <style>
+    :root {
+      --bg: #02040a;
+      --panel: rgba(5, 20, 40, 0.72);
+      --accent: #00ff88;
+      --accent-2: #00e0ff;
+      --hot: #ff5bf1;
+      --soft: #8aa4b4;
+      --error: #ff5555;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1600px 800px at 20% 0%, #0b1f33 0%, var(--bg) 50%), var(--bg);
+      color: #e8f6ff;
+    }
+
+    .wrap { display: grid; gap: 12px; grid-template-rows: auto 1fr auto; height: 100%; padding: 16px; }
+
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+    h1 { font-size: 20px; margin: 0; letter-spacing: 0.5px; color: var(--accent); text-shadow: 0 0 10px rgba(0, 255, 136, 0.6); }
+
+    .hint { color: var(--soft); font-size: 12px; }
+
+    .panels { display: grid; grid-template-columns: 460px 1fr; gap: 12px; min-height: 0; }
+
+    .panel { border: 1px solid rgba(0, 255, 136, 0.25); background: var(--panel); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 14px; padding: 14px; min-height: 0; box-shadow: 0 8px 22px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.05); }
+
+    .section { margin-bottom: 12px; }
+    .section h2 { font-size: 13px; margin: 0 0 8px; color: var(--accent-2); }
+
+    textarea, select, input[type="text"] { width: 100%; background: rgba(0, 40, 70, 0.5); border: 1px solid rgba(0, 224, 255, 0.4); color: #e8f6ff; border-radius: 10px; padding: 10px 12px; outline: none; }
+    textarea { min-height: 160px; resize: vertical; }
+
+    /* 富文本编辑器 */
+    .editor { width: 100%; min-height: 180px; border: 1px solid rgba(0, 224, 255, 0.4); border-radius: 10px; padding: 10px 12px; background: rgba(0, 40, 70, 0.5); outline: none; overflow-y: auto; }
+    .editor:empty:before { content: attr(data-placeholder); color: #6ea5bf; }
+    .toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .tbtn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #e8f6ff; border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+
+    .row { display: flex; align-items: center; gap: 10px; }
+    .row > * { flex: 1; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { border: 1px solid rgba(255,255,255,0.15); padding: 6px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; user-select: none; transition: .2s ease; background: rgba(255,255,255,0.03); }
+    .chip.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,255,136,0.15) inset; }
+
+    .slider-wrap { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+    .slider-wrap input[type="range"] { accent-color: var(--accent); }
+    .slider-val { font-size: 12px; color: var(--hot); min-width: 48px; text-align: right; }
+
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn { background: linear-gradient(135deg, #ff4ec2 0%, #6a64ff 100%); color: white; border: none; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; letter-spacing: 0.3px; box-shadow: 0 6px 16px rgba(109, 80, 255, 0.35); transition: transform .08s ease, box-shadow .2s ease; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(109, 80, 255, 0.5); }
+    .btn.alt { background: linear-gradient(135deg, #00e0ff, #00ff88); color: #00251a; }
+    .btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.18); color: #e8f6ff; }
+
+    .out { white-space: normal; word-break: break-word; min-height: 160px; background: rgba(0,0,0,0.35); border-radius: 10px; padding: 12px; border: 1px dashed rgba(255,255,255,0.12); }
+    .out :is(p,ul,ol,blockquote,pre) { margin: .4em 0; }
+
+    .meta { color: var(--soft); font-size: 12px; margin-top: 8px; }
+
+    .cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .tag.red { background: rgba(255, 80, 80, 0.18); box-shadow: 0 0 8px rgba(255, 80, 80, 0.35) inset; }
+    .tag.yellow { background: rgba(255, 215, 0, 0.2); box-shadow: 0 0 8px rgba(255, 215, 0, 0.28) inset; }
+    .tag.green { background: rgba(0, 255, 136, 0.16); box-shadow: 0 0 8px rgba(0, 255, 136, 0.3) inset; }
+
+    footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .right { display: flex; gap: 8px; align-items: center; }
+
+    .toast { position: fixed; right: 16px; bottom: 16px; background: #0e2433; border: 1px solid rgba(255,255,255,.12); color: #dff7ff; padding: 10px 12px; border-radius: 10px; box-shadow: 0 8px 18px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transform: translateY(10px); transition: .25s; }
+    .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    .signoff { color: var(--hot); font-style: italic; text-align: right; margin-top: 6px; }
+
+    /* 允许在输出中安全显示的标签基础样式 */
+    .out a { text-decoration: underline; }
+    .out code, .out pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>文本混淆1.0</h1>
+      <div class="hint">可逆混淆 · 多风格模仿 · 词频雷达 · 富文本保真</div>
+    </header>
+
+    <div class="panels">
+      <!-- 左侧设置面板 -->
+      <aside class="panel" id="left">
+        <div class="section">
+          <h2>输入文本</h2>
+          <div class="row" style="margin-bottom:8px">
+            <label class="chip" style="cursor:default"><input type="checkbox" id="richMode" /> 富文本模式（保留加粗、列表、段落等）</label>
+          </div>
+          <div class="toolbar" id="toolbar" style="display:none">
+            <button class="tbtn" data-cmd="bold">B</button>
+            <button class="tbtn" data-cmd="italic"><i>I</i></button>
+            <button class="tbtn" data-cmd="underline"><u>U</u></button>
+            <button class="tbtn" data-cmd="insertUnorderedList">• 列表</button>
+            <button class="tbtn" data-cmd="insertOrderedList">1. 列表</button>
+            <button class="tbtn" data-cmd="formatBlock" data-value="p">段落</button>
+            <button class="tbtn" data-cmd="formatBlock" data-value="blockquote">引用</button>
+            <button class="tbtn" id="clearFormat">清除样式</button>
+          </div>
+          <textarea id="input" placeholder="在这里输入或粘贴文本（纯文本模式）"></textarea>
+          <div id="inputRich" class="editor" contenteditable="true" data-placeholder="在这里输入或粘贴文本（富文本模式）" style="display:none"></div>
+        </div>
+
+        <div class="section">
+          <h2>混淆强度</h2>
+          <div class="slider-wrap">
+            <input id="intensity" type="range" min="1" max="100" value="50" />
+            <div class="slider-val" id="intensityVal">50%</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>混淆层</h2>
+          <div class="chips" id="layers">
+            <div data-k="quotes" class="chip active">为名词/代词加引号</div>
+            <div data-k="punct" class="chip active">标点噪声</div>
+            <div data-k="case" class="chip active">大小写扰动</div>
+            <div data-k="subst" class="chip active">词汇替换</div>
+            <div data-k="emoji" class="chip active">表情注入</div>
+            <div data-k="metadata" class="chip active">伪造元数据</div>
+            <div data-k="shuffle" class="chip active">语序打乱</div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <label class="chip" style="cursor:default">
+              <input id="reversible" type="checkbox" checked /> 可逆风格标记
+            </label>
+            <label class="chip" style="cursor:default">
+              <input id="strictReversible" type="checkbox" /> 严格可逆（尽量不改变语义）
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>风格包（可多选）</h2>
+          <div class="chips" id="styles">
+            <div class="chip" data-style="shuangwen">爽文</div>
+            <div class="chip" data-style="xianxia">仙侠</div>
+            <div class="chip" data-style="saibo">赛博朋克</div>
+            <div class="chip" data-style="xuanyi">悬疑</div>
+            <div class="chip" data-style="kepu">科普体</div>
+            <div class="chip" data-style="zhihu">知乎体</div>
+            <div class="chip" data-style="gongzhonghao">公众号爆款</div>
+          </div>
+          <div class="hint" style="margin-top:6px">提示：这些是「体裁风格」模板，避免直接模仿具体在世作者。</div>
+        </div>
+
+        <div class="section btns">
+          <button class="btn" id="btnObf">🔒 混淆文本</button>
+          <button class="btn alt" id="btnAnalyze">📊 词频分析</button>
+          <button class="btn ghost" id="btnDecode">🔓 解码文本</button>
+          <button class="btn ghost" id="btnCopy">📋 复制输出文本</button>
+          <button class="btn ghost" id="btnCopyHTML">📋 复制输出HTML</button>
+          <button class="btn ghost" id="btnDownload">⬇️ 导出TXT</button>
+          <button class="btn ghost" id="btnDownloadHTML">⬇️ 导出HTML</button>
+          <button class="btn ghost" id="btnClear">🗑️ 清空</button>
+        </div>
+      </aside>
+
+      <!-- 右侧输出与分析 -->
+      <main class="panel" id="right">
+        <div class="section">
+          <h2>输出</h2>
+          <div id="output" class="out"></div>
+          <div id="signoff" class="signoff"></div>
+          <div class="meta" id="meta"></div>
+        </div>
+        <div class="section">
+          <h2>词频雷达</h2>
+          <div id="cloud" class="cloud"></div>
+          <div class="meta" id="tally"></div>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <div class="hint">文本混淆1.0 — 富文本保真 / 风格增强 / 可逆解码</div>
+      <div class="right hint">© demo build</div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  // ======= 工具：选择器 & 提示 =======
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const toast = (msg) => { const el = $('#toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2000); };
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const ZERO_WIDTH = '\u200b';
+
+  // ======= 安全的输出（保留格式） =======
+  // 允许通过的标签与属性白名单
+  const ALLOWED_TAGS = new Set(['B','STRONG','I','EM','U','S','SUP','SUB','A','BR','P','UL','OL','LI','BLOCKQUOTE','PRE','CODE','SPAN']);
+  const ALLOWED_ATTRS = { 'A': new Set(['href','title','target','rel']), 'SPAN': new Set([]), 'CODE': new Set([]), 'PRE': new Set([]) };
+  function sanitizeHTML(html){
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const root = doc.body.firstChild;
+    const walker = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null);
+    const toRemove = [];
+    while (walker.nextNode()){
+      const el = walker.currentNode;
+      if (!ALLOWED_TAGS.has(el.tagName)) { toRemove.push(el); continue; }
+      // 清理属性
+      const allow = ALLOWED_ATTRS[el.tagName] || new Set();
+      // 避免内联事件/样式
+      [...el.attributes].forEach(attr => {
+        const n = attr.name.toLowerCase();
+        if (!allow.has(attr.name)) el.removeAttribute(attr.name);
+        if (n.startsWith('on') || n === 'style') el.removeAttribute(attr.name);
+        if (el.tagName === 'A' && attr.name === 'href' && !/^https?:/i.test(attr.value)) el.removeAttribute('href');
+        if (el.tagName === 'A') { el.setAttribute('target','_blank'); el.setAttribute('rel','noopener noreferrer'); }
+      });
+    }
+    toRemove.forEach(el => el.replaceWith(...el.childNodes));
+    return root.innerHTML;
+  }
+
+  function setOutHTML(html){ $('#output').innerHTML = sanitizeHTML(html); }
+  function setOutText(txt){ $('#output').textContent = txt; }
+
+  // 遍历并仅处理文本节点，保留标签结构
+  function transformHTMLText(html, transformFn){
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const root = doc.body.firstChild;
+    const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n => { n.nodeValue = transformFn(n.nodeValue); });
+    return root.innerHTML;
+  }
+
+  // ======= 数据：词库 =======
+  const COMMON = {
+    '的': ['的','·的·','的的','の','\u200b的','ｄｅ的','旳'],
+    '了': ['了','ㄌ','了了','\u200b了','亖了','le'],
+    '是': ['是','昰','是是','\u200b是','是~','shi'],
+    '我': ['我','吾','鄙人','在下','偶','本人','俺'],
+    '你': ['你','汝','您','伱','ni'],
+    '他': ['他','佢','ta','TA'],
+    '她': ['她','ta','TA'],
+    '它': ['它','ta','TA'],
+    '我们': ['我们','咱们','吾等','本组','本团队','wǒmen'],
+    '大家': ['大家','各位','诸位','列位','各位同学'],
+    '很好': ['很好','不错','挺佳','可以','还行','OK'],
+    '不是': ['不是','并非','非也','no'],
+    '因为': ['因为','由于','缘于','因','因为啊'],
+    '所以': ['所以','因此','故而','于是','所以说'],
+    '但是': ['但是','然而','不过','可是','只是'],
+    '如果': ['如果','若','倘若','要是','如其'],
+    '这个': ['这个','这','该','此','这玩意儿','这个呀'],
+    '那个': ['那个','那','彼','彼物','那玩意儿','那个呀'],
+    '很多': ['很多','不少','许多','蛮多','一堆','N多'],
+    '非常': ['非常','极其','极为','相当','爆','巨'],
+    '重要': ['重要','关键','要紧','核心','首要','至关重要'],
+    '问题': ['问题','痛点','槽点','瓶颈','难题','issue'],
+    '优化': ['优化','改进','提升','迭代','refactor'],
+    '用户': ['用户','使用者','小伙伴','朋友们','同学','客户']
+  };
+
+  const SYNONYMS = {
+    '好': ['不错','很棒','优秀','给力','赞'],
+    '坏': ['糟糕','不佳','拉胯','一般般','差劲'],
+    '快': ['迅速','飞快','高速','神速','敏捷'],
+    '慢': ['缓慢','迟钝','不急','放缓'],
+    '多': ['大量','诸多','不少','一票'],
+    '少': ['稀少','较少','有限','不多'],
+    '大': ['巨大','庞大','可观','宏大'],
+    '小': ['细小','微小','轻微','迷你'],
+    '人': ['大家','群众','朋友们','用户','同学们'],
+    '想': ['考虑','思考','设想','盘算'],
+    '觉得': ['认为','以为','感觉'],
+    '说': ['表示','称','提到','说道','讲到'],
+    '做': ['进行','开展','执行','搞'],
+    '用': ['使用','采用','利用','启用'],
+    '提高': ['提升','增强','加强','拉升'],
+    '降低': ['减少','下降','下调','压低'],
+    '因为': ['由于','缘于'],
+    '所以': ['因此','于是','故而'],
+    '但是': ['然而','不过','可是'],
+    '如果': ['若','假如','倘若'],
+    '重要': ['关键','要紧','核心','要害'],
+    '容易': ['轻易','易于','便于'],
+    '困难': ['艰难','不易','挑战','难搞'],
+    '喜欢': ['偏好','中意','喜爱','爱好'],
+    '讨厌': ['厌烦','不喜','嫌弃']
+  };
+
+  const EMOJIS = ["😂","😅","🤔","🚀","👽","✨","📢","😎","🤖","👾","💥","🔮","🕵️","👻","🎉","🤷","😈","🌚","🚨","🔥","😜","🥲","🤝","🧠","🧪","📈","📉"];
+
+  const THEME = {
+    slang: { '很': ['巨','爆','老','相当'], '厉害': ['牛','牛逼','顶','强'], '朋友': ['哥们','姐妹','小伙伴','老铁'], '生气': ['上火','炸毛','气炸'], '摸鱼': ['划水','摆烂'], '喜欢': ['真香','上头'], '老板': ['大佬','甲方爸爸'] },
+    business: { '做': ['开展','推进','执行'], '用': ['采用','使用','启用'], '提高': ['优化','提升','升级'], '钱': ['预算','资金','经费'], '目标': ['指标','KPI','衡量标准'], '计划': ['方案','规划','roadmap'] },
+    tech: { '问题': ['bug','issue','缺陷'], '优化': ['重构','refactor','调优'], '想法': ['方案','思路','设计'], '用户': ['客户','开发者'], '数据': ['指标','metrics'], '上线': ['发布','deploy','上产'] },
+    academic: { '因为': ['由于','缘于'], '所以': ['因此','故此'], '但是': ['然而','尽管如此'], '我们': ['本文','本研究','本团队'], '觉得': ['认为','据此推断'], '看起来': ['显然','可见'] }
+  };
+
+  const STYLE_PACKS = {
+    shuangwen: { name: '爽文', openers: ['三秒钟，我的人生再次起飞——','其实我只想低调，但实力不允许。','系统弹窗再次闪起：*任务完成*。'], closers: ['这，才刚刚开始。','世界，于此刻改变。','众人目光呆住。'], words: { '提升': ['暴涨','飞升','质变'], '困难': ['小儿科','洒洒水','不值一提'], '成功': ['无双','碾压','降维打击'] } },
+    xianxia: { name: '仙侠', openers: ['朝露未晞，灵雾初生。','道心如炬，灵台清明。','灵气复苏的第九千个日夜。'], closers: ['道友且缓，因果未了。','此去扶摇直上，九万里。','琴心一曲，风过无痕。'], words: { '团队': ['宗门','仙府','道统'], '学习': ['参悟','参详','修习'], '力量': ['灵力','法力','神通'] } },
+    saibo: { name: '赛博朋克', openers: ['霓虹雨落在义体接缝。','矩阵噪声溢出屏幕边缘。','中枢塔的时钟零点对齐。'], closers: ['数据风暴仍在高空盘旋。','我把芯片调到静音，继续前行。','城市光锥缓缓挪动。'], words: { '信息': ['数据流','指令帧','量化包'], '团队': ['小队','节点','集群'], '问题': ['故障','失配','异常'] } },
+    xuanyi: { name: '悬疑', openers: ['门锁轻响，不合时宜。','风把纸张翻到那一页。','他回头时，走廊尽头没有人。'], closers: ['灯灭的瞬间，答案浮出。','指针指向十二，世界安静。','有人知道，却没人说。'], words: { '发现': ['察觉','闻到味道','捕捉到细节'], '离开': ['暂避','撤离','保持距离'], '说明': ['暗示','留下痕迹','细述'] } },
+    kepu: { name: '科普体', openers: ['本文尝试以通俗方式解释一个常见疑问：','先给出结论，然后解释原因。','为了更直观，我们做个小实验。'], closers: ['以上，供参考。','到这里，逻辑闭环。','如果要进一步扩展，可以从三个方向入手。'], words: { '因为': ['原因在于','主要由','可以归结为'], '所以': ['因此','由此可见','推导得到'], '举例': ['例如','比方说','打个比方'] } },
+    zhihu: { name: '知乎体', openers: ['谢邀。','先说结论：','题主的问题可以拆成三层。'], closers: ['以上。','仅代表个人观点，欢迎讨论。','能帮助到你就好。'], words: { '首先': ['第一点','先说一点'], '其次': ['第二点','再说一点'], '最后': ['第三点','最后一点'] } },
+    gongzhonghao: { name: '公众号爆款', openers: ['这可能是你今年读到最有用的一篇文章。','注意：99%的人都忽略了这件事。','别再被误导了。'], closers: ['转给你在乎的人。','收藏，回看。','点个在看，别迷路。'], words: { '提升': ['质变','飞跃','跃迁'], '注意': ['千万别忽视','重点来了','划重点'], '重要': ['底层逻辑','关键路径','核心矛盾'] } }
+  };
+
+  const PRONOUNS_CN = ['我','你','他','她','它','我们','你们','他们','她们','它们','自己','此','彼','其'];
+
+  function splitSentencesCNEN(text) {
+    return text
+      .replace(/[\r\n]+/g, '\n')
+      .split(/([。！？!?\.](?:\s|$))/)
+      .reduce((acc, cur, idx, arr) => {
+        if (/^[。！？!?\.]\s*$/.test(cur)) return acc;
+        const tail = arr[idx+1] && /^[。！？!?\.]\s*$/.test(arr[idx+1]) ? arr[idx+1].trim() : '';
+        acc.push(tail ? cur.trim() + tail : cur.trim());
+        return acc;
+      }, [])
+      .filter(Boolean);
+  }
+
+  function nounsAndPronouns(text) {
+    const found = new Set();
+    const words = text.split(/(\s+|[,，。\.\-!！\?？、；;：:])/).filter(w => w && !/^\s+$/.test(w));
+    for (const w of words) {
+      const clean = w.replace(/[^\u4e00-\u9fffA-Za-z0-9]/g, '');
+      if (!clean) continue;
+      if (PRONOUNS_CN.includes(clean)) found.add(clean);
+      if (/^[A-Z][a-z]+$/.test(clean)) found.add(clean);
+    }
+    return Array.from(found);
+  }
+
+  const PUNCTS = ['!','!!','!!!','...','?!','!?','??'];
+
+  function addQuotes(text, intensity) {
+    let out = text;
+    const np = nounsAndPronouns(text);
+    np.forEach(word => {
+      if (Math.random()*100 < intensity) {
+        if (/^[\u4e00-\u9fff]+$/.test(word)) {
+          out = out.replace(new RegExp(word, 'g'), `「${word}」`);
+        } else {
+          out = out.replace(new RegExp(`\\b${word}\\b`, 'g'), `"${word}"`);
+        }
+      }
+    });
+    return out;
+  }
+
+  function punctNoise(text, intensity) {
+    return text.replace(/[。.!！?？]+/g, (m) => (Math.random()*100 < intensity ? ' ' + pick(PUNCTS) + ' ' : m));
+  }
+
+  function caseNoise(text, intensity) {
+    const words = text.split(/(\s+)/);
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      if (/^\s+$/.test(w)) continue;
+      if (Math.random()*100 < intensity) {
+        const a = w.slice(0,1).toUpperCase() + w.slice(1).toLowerCase();
+        const b = w.toUpperCase();
+        const c = w.toLowerCase();
+        words[i] = pick([a,b,c]);
+      }
+    }
+    return words.join(' ');
+  }
+
+  function replaceWithDict(text, dict, intensity) {
+    let out = text;
+    Object.keys(dict).forEach(key => {
+      if (Math.random()*100 < intensity) {
+        const alts = dict[key];
+        const re = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        out = out.replace(re, () => pick(alts));
+      }
+    });
+    return out;
+  }
+
+  function shuffleClauses(text, intensity) {
+    const sents = splitSentencesCNEN(text).map(s => {
+      if (Math.random()*100 >= intensity) return s;
+      let t = s;
+      t = t.replace(/^(因为|如果)([^，。；！!？?]+)，(.*)$/,(m,p1,p2,p3)=> `${p3.replace(/^\s*/,'')}，${p1}${p2}`);
+      return t;
+    });
+    return sents.join(' ');
+  }
+
+  function injectEmoji(text, intensity) { return text.replace(/([。.!！?？]+)(\s|$)/g, (match, p, sep) => (Math.random()*100 < intensity ? `${p} ${pick(EMOJIS)}${sep||''}` : match)); }
+
+  function fakeMetaText(text, intensity){
+    if (Math.random()*100 >= intensity) return text;
+    const tags = ['#nofilter','#anonymous','#obfuscation','#mystery','#enigma','#AIwrites'];
+    const authors = ['Author: anon','Author: unknown','By John Doe','By Jane Doe','Sent from my device','From: Classified','Author: Ghostwriter'];
+    const t = Array.from({length: 1 + Math.floor(Math.random()*2)}, () => pick(tags)).join(' ');
+    return text + `\n\n${t}  ${pick(authors)}`;
+  }
+
+  function fakeMetaHTML(html){
+    const meta = document.createElement('p');
+    meta.textContent = `${pick(['#nofilter','#anonymous','#obfuscation','#mystery'])}  ${pick(['Author: anon','By John Doe','Sent from my device'])}`;
+    return sanitizeHTML(html + meta.outerHTML);
+  }
+
+  function applyStylePacks(text, selectedStyles, opts){
+    let out = text; const markerOn = !!opts.reversible;
+    for (const key of selectedStyles) {
+      const pack = STYLE_PACKS[key]; if (!pack) continue; const map = pack.words || {};
+      Object.keys(map).forEach(src => {
+        const alts = map[src]; const re = new RegExp(src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        out = out.replace(re, () => { const rep = pick(alts); return markerOn ? `⟦S:${key}:${src}→${rep}⟧${rep}` : rep; });
+      });
+      const sents = splitSentencesCNEN(out);
+      out = sents.map((s, i) => {
+        if (!s) return s; let r = s;
+        if (i === 0 && Math.random() < 0.8) r = (markerOn?`⟦O:${key}⟧`:``) + pick(pack.openers) + ' ' + r;
+        if (Math.random() < 0.5) r = r + ' ' + (markerOn?`⟦C:${key}⟧`:``) + pick(pack.closers);
+        return r;
+      }).join(' ');
+    }
+    return out;
+  }
+
+  function decodeText(text){
+    let out = text;
+    out = out.replace(/[“”"\u300c\u300d\u300e\u300f『』「」]/g,'');
+    EMOJIS.forEach(e => { out = out.split(e).join(''); });
+    out = out.replace(/[!?！？]+/g,'。').replace(/\.{2,}|…+/g,'。');
+    out = out.replace(/\u200b/g, '');
+    const reverseMap = {};
+    const addReverse = (src, arr) => arr.forEach(v => reverseMap[v] = src);
+    Object.entries(COMMON).forEach(([k, arr]) => addReverse(k, arr));
+    Object.entries(SYNONYMS).forEach(([k, arr]) => addReverse(k, arr));
+    Object.entries(THEME).forEach(([t, m]) => Object.entries(m).forEach(([k, arr]) => addReverse(k, arr)));
+    const tokens = Object.keys(reverseMap).sort((a,b)=>b.length-a.length);
+    tokens.forEach(tok => { const re = new RegExp(tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'); out = out.replace(re, reverseMap[tok]); });
+    out = out.replace(/⟦S:([\w-]+):([^→]+)→([^⟧]+)⟧/g, (m,sty,src,rep)=>src);
+    out = out.replace(/⟦O:[\w-]+⟧/g,''); out = out.replace(/⟦C:[\w-]+⟧/g,'');
+    out = out.replace(/\s*#\S+.*$/m,''); out = out.replace(/\s*(作者:|By|From:|Author:).*$/m,''); out = out.replace(/\s*[～~].*$/m,'');
+    return out.trim();
+  }
+
+  function decodeHTML(html){
+    return transformHTMLText(html, decodeText);
+  }
+
+  function analyze(text){
+    const tokens = []; const cn = text.match(/[\u4e00-\u9fff]{1,4}/g) || []; const en = text.match(/[A-Za-z0-9]{2,}/g) || [];
+    tokens.push(...cn, ...en); const map = {}; tokens.forEach(t => map[t] = (map[t]||0) + 1);
+    const sorted = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0, 40);
+    const max = sorted[0]?.[1] || 1; const cloud = sorted.map(([w,c]) => ({w, c, p: c/max}));
+    return cloud;
+  }
+
+  // ======= 状态 & UI 绑定 =======
+  const state = { layers: new Set(['quotes','punct','case','subst','emoji','metadata','shuffle']), styles: new Set(), rich: false };
+
+  $('#intensity').addEventListener('input', e => { $('#intensityVal').textContent = e.target.value + '%'; });
+
+  $$('#layers .chip').forEach(chip => chip.addEventListener('click', () => { chip.classList.toggle('active'); const k = chip.dataset.k; if (!k) return; if (chip.classList.contains('active')) state.layers.add(k); else state.layers.delete(k); }));
+  $$('#styles .chip').forEach(chip => chip.addEventListener('click', () => { chip.classList.toggle('active'); const k = chip.dataset.style; if (!k) return; if (chip.classList.contains('active')) state.styles.add(k); else state.styles.delete(k); }));
+
+  // 富文本切换
+  $('#richMode').addEventListener('change', (e) => {
+    state.rich = e.target.checked;
+    $('#toolbar').style.display = state.rich ? '' : 'none';
+    $('#input').style.display = state.rich ? 'none' : '';
+    $('#inputRich').style.display = state.rich ? '' : 'none';
+    if (state.rich && $('#input').value) { $('#inputRich').innerText = $('#input').value; $('#input').value = ''; }
+  });
+
+  // 简易富文本工具栏
+  $$('#toolbar .tbtn').forEach(btn => btn.addEventListener('click', () => {
+    const cmd = btn.dataset.cmd; const val = btn.dataset.value || null; document.execCommand(cmd, false, val);
+  }));
+  $('#clearFormat').addEventListener('click', () => document.execCommand('removeFormat'));
+
+  // 工具：从输入读取文本/HTML
+  function readInputText(){ return state.rich ? $('#inputRich').innerText : $('#input').value; }
+  function readInputHTML(){ return state.rich ? $('#inputRich').innerHTML : ( $('#input').value.replace(/\n/g,'<br>') ); }
+
+  // 主流程：拼接文本处理管线
+  function pipeline(text, opts){
+    const intensity = +$('#intensity').value; const use = (k) => state.layers.has(k);
+    let out = text; const reversible = $('#reversible').checked; const strict = $('#strictReversible').checked;
+    if (use('quotes')) out = addQuotes(out, intensity);
+    if (use('punct')) out = punctNoise(out, intensity);
+    if (use('case'))  out = caseNoise(out, intensity);
+    if (use('subst')) {
+      out = replaceWithDict(out, COMMON, intensity);
+      out = replaceWithDict(out, SYNONYMS, strict ? Math.min(intensity, 35) : intensity);
+      out = replaceWithDict(out, THEME.business, intensity);
+      out = replaceWithDict(out, THEME.tech, intensity);
+      out = replaceWithDict(out, THEME.academic, intensity);
+      out = replaceWithDict(out, THEME.slang, intensity);
+    }
+    if (use('shuffle')) out = shuffleClauses(out, intensity);
+    if (use('emoji')) out = injectEmoji(out, intensity);
+    if (state.styles.size) out = applyStylePacks(out, Array.from(state.styles), { reversible });
+    if (use('metadata')) out = fakeMetaText(out, intensity);
+    return { out, meta: `layers=[${Array.from(state.layers).join(',')}] styles=[${Array.from(state.styles).join(',')}] reversible=${reversible} strict=${strict}` };
+  }
+
+  // 动作：混淆
+  $('#btnObf').addEventListener('click', () => {
+    const intensity = +$('#intensity').value; const text = readInputText().trim(); if (!text) return toast('请输入要处理的文本');
+    const { out, meta } = pipeline(text, {});
+    if (state.rich) {
+      // 对富文本逐文本节点处理
+      const htmlIn = readInputHTML();
+      const htmlOut = transformHTMLText(htmlIn, (t)=> pipeline(t, {}).out);
+      const finalHTML = state.layers.has('metadata') ? fakeMetaHTML(htmlOut) : htmlOut;
+      setOutHTML(finalHTML);
+    } else {
+      setOutText(out);
+    }
+    const sigs = ['～打扰了','～先这样啦','～就酱','～江湖再见','～保持神秘','～溜了','～抱拳','～祝好','～此致','～完毕'];
+    $('#signoff').textContent = pick(sigs);
+    $('#meta').textContent = meta;
+  });
+
+  // 动作：解码
+  $('#btnDecode').addEventListener('click', () => {
+    if (state.rich) {
+      const html = readInputHTML(); if (!html.trim()) return toast('请输入需要解码的文本');
+      const outHTML = decodeHTML(html);
+      setOutHTML(outHTML);
+    } else {
+      const text = readInputText().trim(); if (!text) return toast('请输入需要解码的文本');
+      const out = decodeText(text); setOutText(out);
+    }
+    $('#signoff').textContent=''; $('#meta').textContent='';
+  });
+
+  // 动作：词频分析
+  $('#btnAnalyze').addEventListener('click', () => {
+    const text = state.rich ? $('#inputRich').innerText : $('#input').value; if (!text.trim()) return toast('请输入要分析的文本');
+    const cloud = analyze(text);
+    const html = cloud.map(({w,p}) => { const cls = p>0.7? 'red' : p>0.35 ? 'yellow' : 'green'; return `<span class="tag ${cls}" data-w="${w}">${w}</span>`; }).join('');
+    $('#cloud').innerHTML = html; $('#tally').textContent = cloud.map(({w,c})=>`${w}: ${c}`).join(' · ');
+    $$('#cloud .tag').forEach(el => el.addEventListener('click', () => {
+      const w = el.dataset.w; let tips = [];
+      if (SYNONYMS[w]) tips = SYNONYMS[w]; else tips = [w + 'o', w.split('').map(c=>c+c).join(''), w.split('').reverse().join('')];
+      toast(`“${w}” 可替代：${tips.join('，')}`);
+    }));
+  });
+
+  // 清空
+  $('#btnClear').addEventListener('click', () => { $('#input').value=''; $('#inputRich').innerHTML=''; $('#output').innerHTML=''; $('#signoff').textContent=''; $('#cloud').innerHTML=''; $('#tally').textContent=''; $('#meta').textContent=''; });
+
+  // 复制 / 导出
+  $('#btnCopy').addEventListener('click', async () => { const txt = $('#output').innerText || ''; if (!txt) return toast('没有可复制的内容'); try { await navigator.clipboard.writeText(txt); toast('已复制纯文本'); } catch { toast('复制失败'); } });
+  $('#btnCopyHTML').addEventListener('click', async () => { const html = $('#output').innerHTML || ''; if (!html) return toast('没有可复制的内容'); try { await navigator.clipboard.writeText(html); toast('已复制HTML'); } catch { toast('复制失败'); } });
+
+  $('#btnDownload').addEventListener('click', () => { const blob = new Blob([($('#output').innerText||'')], {type:'text/plain;charset=utf-8'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'obfuscated.txt'; a.click(); URL.revokeObjectURL(a.href); });
+  $('#btnDownloadHTML').addEventListener('click', () => { const blob = new Blob([('<!DOCTYPE html><meta charset="utf-8">'+($('#output').innerHTML||''))], {type:'text/html;charset=utf-8'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'obfuscated.html'; a.click(); URL.revokeObjectURL(a.href); });
+})();
+</script>
+
+<!-- === 2.2 扩展：风格指纹与动态样式 === -->
+<script>
+(function(){
+  // 1) 扩展风格包
+  const STYLE_PACKS_EXT = {
+    xuanhuan: {
+      name: '玄幻',
+      openers: ['天幕微裂，灵潮东涌。','少年立于断崖，风如刀割。','测灵水晶亮起一线微光。'],
+      closers: ['今夜起，名动四方。','逆风而行，星河作证。','他提剑向天，心如炎阳。'],
+      words: {
+        '力量': ['灵力','法力','元气'],
+        '修炼': ['修行','淬体','筑基'],
+        '境界': ['品阶','境','重'],
+        '团队': ['宗门','道统','仙府']
+      },
+      traits: { dialogue_ratio: 0.22, cliffhanger: 0.28, punctuation: 'emdash', person: 'third',
+                honorifics: ['道友','前辈','真君'] }
+    },
+    dushi: {
+      name: '都市',
+      openers: ['早高峰地铁像被揉皱的易拉罐。','电话在会议室的寂静里响起。','霓虹与外卖在夜里互相打招呼。'],
+      closers: ['这座城，终于记住了他的名字。','KPI之外，还有风。','他关掉工位的台灯，故事刚开场。'],
+      words: {
+        '公司': ['甲方','乙方','品牌方'],
+        '项目': ['项目','case','单子'],
+        '提升': ['晋升','跃迁','加薪'],
+        '老板': ['上级','领导','大佬']
+      },
+      traits: { dialogue_ratio: 0.35, cliffhanger: 0.18, punctuation: 'comma-heavy', person: 'first' }
+    },
+    tianchong: {
+      name: '甜宠',
+      openers: ['他把外套轻轻披在我肩上。','拍立得里，他的指尖落在我发梢。','他说：别怕，有我。'],
+      closers: ['糖从心里开花。','他眨眨眼，偏爱落成定式。','拥抱里，心跳对了频。'],
+      words: {
+        '喜欢': ['偏爱','心动','上头'],
+        '生气': ['吃醋','闹小情绪','别扭'],
+        '吻': ['亲','啵','轻吻'],
+        '重要': ['唯一','顶配','只此一人']
+      },
+      traits: { dialogue_ratio: 0.5, cliffhanger: 0.12, punctuation: 'ellipsis', person: 'first',
+                honorifics: ['小朋友','先生','太太'] }
+    },
+    quanmo: {
+      name: '权谋·历史',
+      openers: ['三更鼓响，殿门初开。','折子叠在案上，朱砂未干。','天子一言，百官屏息。'],
+      closers: ['棋局铺到天光。','胜败在毫厘之间。','此后，风向悄然改换。'],
+      words: {
+        '计划': ['谋划','筹策','布局'],
+        '团队': ['幕僚','门客','亲军'],
+        '权力': ['权柄','实权','兵符'],
+        '会议': ['小朝','廷议','密折']
+      },
+      traits: { dialogue_ratio: 0.18, cliffhanger: 0.3, punctuation: 'classical', person: 'third',
+                honorifics: ['陛下','丞相','大人'] }
+    },
+    wangyou: {
+      name: '网游',
+      openers: ['系统提示音在耳机里弹出。','新服零点开启，公会频道刷屏。','BOSS仇恨条抖了一下。'],
+      closers: ['世界频道被烟花点亮。','记录保存，榜单改写。','掉落结算，通关！'],
+      words: {
+        '团队': ['公会','小队','团本'],
+        '技能': ['天赋','连招','冷却'],
+        '升级': ['练级','冲榜','刷本'],
+        '上线': ['开服','开荒','首杀']
+      },
+      traits: { dialogue_ratio: 0.3, cliffhanger: 0.2, punctuation: 'hud', person: 'first',
+                ui_terms: ['副本','DPS','OT','拉仇恨'] }
+    },
+    wuxian: {
+      name: '无限流',
+      openers: ['倒计时归零，传送门张开。','白墙上写着十条规则，错一条就死。','电梯停在不存在的楼层。'],
+      closers: ['通关不是结束，下一扇门已亮。','积分刷新，排名微调。','活下来，才有资格读答案。'],
+      words: {
+        '任务': ['主线','支线','副本'],
+        '道具': ['卡牌','钥匙','buff'],
+        '积分': ['点数','兑换','排名']
+      },
+      traits: { dialogue_ratio: 0.24, cliffhanger: 0.45, punctuation: 'emdash', person: 'first' }
+    },
+    kuaichuan: {
+      name: '快穿',
+      openers: ['叮——宿主您好，已绑定新世界。','系统提示：请修正偏离剧情。','位面通道稳定，倒计时开始。'],
+      closers: ['世界线轻轻归位。','任务结算，下一站出发。','目标完成，剧情回正。'],
+      words: {
+        '世界': ['小世界','位面','剧情线'],
+        '完成': ['打卡','收尾','结算'],
+        '角色': ['目标对象','攻略对象','剧情人物']
+      },
+      traits: { dialogue_ratio: 0.33, cliffhanger: 0.25, punctuation: 'system', person: 'first',
+                system_prefix: ['【系统】','〈系统〉','〔系统提示〕'] }
+    },
+    zhongtian: {
+      name: '种田',
+      openers: ['晨雾未散，鸡啼三声。','她挽起袖子，翻出旧地契。','河埂边的蒲草长得正旺。'],
+      closers: ['炊烟起处，年景有盼。','账本合拢，松了一口气。','院里挂起了新灯笼。'],
+      words: {
+        '赚钱': ['致富','盘活','置办'],
+        '计划': ['家计','打理','筹划'],
+        '问题': ['家务','人情','琐事'],
+        '市场': ['集市','乡圩','铺子']
+      },
+      traits: { dialogue_ratio: 0.26, cliffhanger: 0.14, punctuation: 'mild', person: 'first' }
+    },
+    moshi: {
+      name: '末世',
+      openers: ['第一声警报像从地底爬出。','城市停电，夜色被撕开一道口子。','无人机在废墟上空盘旋。'],
+      closers: ['活着，是唯一的王法。','今天也算赚到了一天。','风把灰烬吹向更远的地方。'],
+      words: {
+        '丧尸': ['感染者','行尸','游荡者'],
+        '食物': ['口粮','罐头','净水'],
+        '武器': ['砍刀','钉枪','自制武器'],
+        '基地': ['庇护所','安全区','聚居点']
+      },
+      traits: { dialogue_ratio: 0.2, cliffhanger: 0.36, punctuation: 'staccato', person: 'first' }
+    },
+    lingyi: {
+      name: '灵异·惊悚',
+      openers: ['凌晨三点，电梯停在了不存在的十三层。','蜡烛哭了一滴泪。','门缝里吹来一股凉气。'],
+      closers: ['门外的脚步声，还在。','他回头时，走廊尽头没有人。','灯灭了。'],
+      words: {
+        '恐惧': ['寒意','阴气','毛骨悚然'],
+        '线索': ['痕迹','禁忌','符纸'],
+        '声音': ['窸窣','脚步','低语']
+      },
+      traits: { dialogue_ratio: 0.18, cliffhanger: 0.5, punctuation: 'ellipsis', person: 'third' }
+    },
+    wuxia: {
+      name: '武侠',
+      openers: ['夜雨入剑鞘。','酒旗在风里猎猎。','驿路枯灯，人影一掠。'],
+      closers: ['江湖路远，后会有期。','一剑收鞘，风停云散。','杯尽，月斜。'],
+      words: {
+        '团队': ['门派','镖局','同道'],
+        '升级': ['练功','悟招','破境'],
+        '技能': ['招式','剑法','内力']
+      },
+      traits: { dialogue_ratio: 0.3, cliffhanger: 0.22, punctuation: 'classical', person: 'third' }
+    },
+    kexue: {
+      name: '硬科幻',
+      openers: ['氢原子的谱线划过舷窗。','推进器在真空里低鸣。','轨道环的晨昏线缓缓掠过。'],
+      closers: ['文明的光锥向前推进了一毫米。','噪声降下去，信号抬起来。','飞行日志：继续。'],
+      words: {
+        '飞船': ['星舰','母港','轨道器'],
+        'AI': ['中枢','副脑','算力'],
+        '跳跃': ['曲率','跃迁','虫洞']
+      },
+      traits: { dialogue_ratio: 0.16, cliffhanger: 0.2, punctuation: 'technical', person: 'third',
+                unit_terms: ['AU','m/s²','Hz','nm'] }
+    }
+  };
+  if (window.STYLE_PACKS) { Object.assign(window.STYLE_PACKS, STYLE_PACKS_EXT); }
+
+  // 2) 指纹级 traits 应用器
+  function splitSentencesCNEN_forTraits(text){
+    return (text || '')
+      .replace(/[\r\n]+/g, '\n')
+      .split(/([。！？!?\.](?:\s|$))/)
+      .reduce((acc, cur, i)=>{
+        if (i % 2 === 0) acc.push(cur);
+        else acc[acc.length-1] += cur;
+        return acc;
+      }, []);
+  }
+  function applyStyleTraits(text, traits){
+    let out = text || '';
+
+    // 标点风格
+    if (traits.punctuation === 'ellipsis') {
+      out = out.replace(/([。！!?])\s*/g, '…… ');
+    } else if (traits.punctuation === 'emdash') {
+      out = out.replace(/，([^，。！？!?]{2,8})。/g, '，$1——');
+    } else if (traits.punctuation === 'staccato') {
+      out = out.replace(/，/g, '。').replace(/。。+/g,'。');
+    } else if (traits.punctuation === 'technical') {
+      out = out.replace(/大约|大概|差不多/g, '≈');
+    } else if (traits.punctuation === 'classical') {
+      out = out.replace(/的/g,'之');
+    }
+
+    // 对话占比
+    if (traits.dialogue_ratio){
+      const sents = splitSentencesCNEN_forTraits(out);
+      const tgt = Math.floor(sents.length * traits.dialogue_ratio);
+      for (let i=0, c=0; i<sents.length && c<tgt; i++){
+        if (!/^“.*”$/.test(sents[i]) && sents[i].replace(/\s/g,'').length>=6){
+          sents[i] = `“${sents[i].replace(/[。.!！？?]$/, '')}。”`;
+          c++;
+        }
+      }
+      out = sents.join(' ');
+    }
+
+    // 悬念尾巴
+    if (traits.cliffhanger && Math.random() < traits.cliffhanger){
+      out = out.replace(/([。.!！？?])\s*$/, ' ——（未完）$1');
+    }
+
+    // honorifics / 术语注入
+    if (traits.honorifics){
+      const h = traits.honorifics[Math.floor(Math.random()*traits.honorifics.length)];
+      out = out.replace(/你/g, `${h}`);
+    }
+    if (traits.ui_terms){
+      out += `\\n\\n【Tips】${traits.ui_terms.slice(0,3).join(' / ')}`;
+    }
+    if (traits.system_prefix){
+      out = traits.system_prefix[0] + ' ' + out;
+    }
+    if (traits.unit_terms){
+      out = out.replace(/(\\d+)\\s*(小时|年|米)/g, (m,n,u)=>{
+        const units = ['小时','年','米']; const short = ['h','yr','m'][units.indexOf(u)]; return `${n}${short}`;
+      });
+    }
+    return out;
+  }
+
+  // 3) 重写 applyStylePacks：合并 DOM 选择 & 应用 traits
+  if (window.applyStylePacks){
+    const __origApply = window.applyStylePacks;
+    window.applyStylePacks = function(text, selectedStyles, opts){
+      const domSelected = Array.from(document.querySelectorAll('#styles .chip.active')).map(e=>e.dataset.style);
+      const merged = Array.from(new Set([...(selectedStyles||[]), ...domSelected]));
+      let out = __origApply.call(this, text, merged, opts || {});
+      try {
+        merged.forEach(k => {
+          const p = window.STYLE_PACKS && window.STYLE_PACKS[k];
+          if (p && p.traits) out = applyStyleTraits(out, p.traits);
+        });
+      } catch (e) { /* noop */ }
+      return out;
+    };
+  }
+
+  // 4) 动态渲染样式 chips（覆盖原有静态 HTML）
+  function renderStyleChips(){
+    const wrap = document.getElementById('styles'); if (!wrap || !window.STYLE_PACKS) return;
+    const packs = window.STYLE_PACKS;
+    wrap.innerHTML = Object.keys(packs).map(k => (
+      `<div class="chip" data-style="${k}">${packs[k].name || k}</div>`
+    )).join('');
+    wrap.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        chip.classList.toggle('active');
+      });
+    });
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', renderStyleChips);
+  } else {
+    renderStyleChips();
+  }
+  // 可选：提示
+  try { (window.toast || console.log)('已载入 2.2 扩展风格包'); } catch(e){}
+})();
+</script>
+
+</body>
+</html>

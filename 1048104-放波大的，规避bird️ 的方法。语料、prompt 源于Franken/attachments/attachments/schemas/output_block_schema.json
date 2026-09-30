@@ -1,0 +1,79 @@
+{
+  "description": "块级输出字段（Frankentexts 2.2 对齐）",
+  "type": "object",
+  "properties": {
+    "fragments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "preview12": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "oracle",
+              "distractor"
+            ]
+          },
+          "sent_count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "preview12",
+          "role",
+          "sent_count"
+        ]
+      }
+    },
+    "compression_mode": {
+      "type": "string",
+      "enum": [
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "AUTO"
+      ]
+    },
+    "target_K": {
+      "type": "integer"
+    },
+    "rougeL_est": {
+      "type": "number"
+    },
+    "tri_gram_hit_est": {
+      "type": "number"
+    },
+    "copy_rate_final": {
+      "type": "number"
+    },
+    "consistency_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "new_text_ratio": {
+      "type": "number"
+    },
+    "has_distractor": {
+      "type": "boolean"
+    },
+    "body": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "fragments",
+    "compression_mode",
+    "target_K",
+    "copy_rate_final",
+    "body"
+  ]
+}

@@ -1,0 +1,6 @@
+【oracle/distractor 角色与噪声注入】
+
+- 片段元字段建议：id, source, text, topic, sent_count, role。
+- role=oracle：主素材；role=distractor：主题相近但非目标情节。
+- 采样优先 oracle；在素材不足或需要自然过渡时，允许 ≤10% distractor 混入。
+- 禁止以“新增描写”取代混入，避免降低复制率。

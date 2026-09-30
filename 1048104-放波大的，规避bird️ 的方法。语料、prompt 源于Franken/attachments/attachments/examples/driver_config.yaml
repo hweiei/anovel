@@ -1,0 +1,12 @@
+# 运行示例配置（与 Frankentexts 2.2 对齐）
+params:
+  T: 0.90
+  block_len: [600, 800]
+  blocks: 4
+  compression_mode: "MEDIUM"   # HIGH | MEDIUM | LOW | AUTO
+  K: 10                         # 仅在非 AUTO 时生效
+  allow_distractor_ratio: 0.1
+
+# 说明：
+# - 若输出复制率 < T：优先“换片段/重拼”；必要时降低 compression_mode 等级。
+# - 若单片段 < 300 字：启用 S2L 合成。

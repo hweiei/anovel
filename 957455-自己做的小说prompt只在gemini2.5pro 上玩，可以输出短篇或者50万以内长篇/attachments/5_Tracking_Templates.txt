@@ -1,0 +1,297 @@
+# === FILE: 5_Tracking_Templates.txt ===
+# 本文件定义了所有用于追踪故事进度的JSON模板的结构和含义 (This file defines the structure and meaning of all JSON templates used for tracking story progress).
+# AI必须理解这些模板，以便在写作后正确地读取项目状态并提出知识库更新建议 (The AI must understand these templates to correctly read the project status and propose knowledge base updates after writing).
+
+# =============== SECTION 1: 情节追踪器模板 (Plot Tracker Template) ===============
+# 源文件: spec/tracking/plot-tracker.json
+# 作用: 追踪和管理小说中所有主线、支线和角色任务线的状态 (Tracks and manages the status of all main plots, subplots, and character arcs in the novel).
+
+## ————— 模板结构说明 (Template Structure Explanation) —————
+
+# "plotlines" 是一个包含了所有情节线对象的数组 (is an array containing all plotline objects).
+# 每个情节线对象都包含以下关键字段 (Each plotline object contains the following key fields):
+
+# - "id": 情节线的唯一标识符 (A unique identifier for the plotline).
+# - "name": 情节线的名称 (The name of the plotline).
+# - "type": 情节线类型 (The type of plotline)，可选值 (e.g.): "main", "subplot", "character-arc", "mystery".
+# - "description": 对该情节线的简要描述 (A brief description of this plotline).
+# - "relatedCharacters": 与此情节线相关的角色ID列表 (A list of character IDs related to this plotline).
+# - "status": 当前状态 (The current status)，可选值 (e.g.): "foreshadowed" (已铺垫), "active" (进行中), "resolved" (已解决), "abandoned" (已废弃).
+# - "keyEvents": 记录此情节线关键事件的对象数组 (An array of objects recording key events for this plotline).
+#   - "eventId": 事件的唯一ID (Unique ID for the event).
+#   - "chapter": 事件发生的章节 (The chapter in which the event occurs).
+#   - "summary": 事件摘要 (A summary of the event).
+
+## ————— JSON模板示例 (JSON Template Example) —————
+# 这是AI需要理解和生成的JSON格式 (This is the JSON format the AI needs to understand and generate).
+
+```json
+{
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "plotlines": [
+    {
+      "id": "main-01",
+      "name": "寻找失落的古代遗物 (Finding the Lost Ancient Relic)",
+      "type": "main",
+      "description": "主角为了拯救王国，必须找到传说中的古代遗物“星辰之心”。 (The protagonist must find the legendary ancient relic 'Heart of Stars' to save the kingdom.)",
+      "relatedCharacters": ["protagonist-01", "mentor-01"],
+      "status": "active",
+      "keyEvents": [
+        {
+          "eventId": "evt-001",
+          "chapter": 1,
+          "summary": "从导师口中得知“星辰之心”的传说。 (Learned about the legend of the 'Heart of Stars' from the mentor.)"
+        },
+        {
+          "eventId": "evt-002",
+          "chapter": 5,
+          "summary": "在禁忌森林中找到第一块线索地图。 (Found the first clue map in the Forbidden Forest.)"
+        }
+      ]
+    },
+    {
+      "id": "char-arc-01",
+      "name": "主角的复仇之路 (Protagonist's Path of Revenge)",
+      "type": "character-arc",
+      "description": "主角追查在童年时期摧毁他家园的神秘组织。 (The protagonist investigates the mysterious organization that destroyed his home in his childhood.)",
+      "relatedCharacters": ["protagonist-01", "antagonist-01"],
+      "status": "active",
+      "keyEvents": []
+    },
+    {
+      "id": "subplot-01",
+      "name": "配角的家族秘密 (Supporting Character's Family Secret)",
+      "type": "subplot",
+      "description": "配角A似乎在隐藏一个与王室有关的惊人秘密。 (Supporting character A seems to be hiding a shocking secret related to the royal family.)",
+      "relatedCharacters": ["support-A"],
+      "status": "foreshadowed",
+      "keyEvents": [
+        {
+          "eventId": "evt-003",
+          "chapter": 3,
+          "summary": "配角A在与主角对话时，无意中泄露了一个不寻常的贵族姓氏。 (Supporting character A accidentally revealed an unusual noble surname during a conversation with the protagonist.)"
+        }
+      ]
+    }
+  ]
+}
+# =============== SECTION 2: 时间线模板 (Timeline Template) ===============
+# 源文件: spec/tracking/timeline.json
+# 作用: 记录和管理故事中的绝对与相对时间，防止出现时间线冲突 (Records and manages absolute and relative time in the story to prevent timeline conflicts).
+
+## ————— 模板结构说明 (Template Structure Explanation) —————
+
+# "events" 是一个包含了所有时间线事件对象的数组 (is an array containing all timeline event objects).
+# 每个事件对象都包含以下关键字段 (Each event object contains the following key fields):
+
+# - "id": 事件的唯一标识符 (A unique identifier for the event).
+# - "type": 事件类型 (The type of event)，可选值 (e.g.): "absolute" (绝对时间), "relative" (相对时间).
+# - "date": 绝对时间日期 (The date for an absolute event), 格式 (format): "YYYY-MM-DD". 对于幻想世界，可以是“纪元-年份-月份-日期” (For fantasy worlds, it can be 'Era-Year-Month-Day').
+# - "relativeTo": 相对时间事件所参照的事件ID (The event ID that a relative event refers to).
+# - "offset": 相对时间的偏移量 (The offset for a relative event)，例如："+3d" (3天后), "-2w" (2周前), "+1y" (1年后).
+# - "chapter": 事件发生的章节 (The chapter in which the event occurs).
+# - "title": 事件标题 (The title of the event).
+# - "description": 事件的详细描述 (A detailed description of the event).
+# - "charactersInvolved": 参与此事件的角色ID列表 (A list of character IDs involved in this event).
+# - "tags": 事件标签，用于分类 (Tags for categorizing the event), e.g., "battle", "backstory", "turning-point".
+
+## ————— JSON模板示例 (JSON Template Example) —————
+# 这是AI需要理解和生成的JSON格式 (This is the JSON format the AI needs to understand and generate).
+
+```json
+{
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "timeUnit": "Day",
+  "events": [
+    {
+      "id": "time-001",
+      "type": "absolute",
+      "date": "纪元元年-01-01 (Epoch 1, Day 1)",
+      "chapter": null,
+      "title": "“大灾变”发生 (The Cataclysm Occurs)",
+      "description": "旧世界毁灭，魔法能量涌入世界，主角的祖先幸存下来。 (The old world was destroyed, magical energy flooded the world, and the protagonist's ancestors survived.)",
+      "charactersInvolved": [],
+      "tags": ["backstory", "world-history"]
+    },
+    {
+      "id": "time-002",
+      "type": "absolute",
+      "date": "纪元32年-03-15 (Epoch 32, Month 3, Day 15)",
+      "chapter": 1,
+      "title": "故事开始 (Story Begins)",
+      "description": "主角在风息村庆祝他的18岁生日。 (The protagonist celebrates his 18th birthday in Windrest Village.)",
+      "charactersInvolved": ["protagonist-01"],
+      "tags": ["story-start"]
+    },
+    {
+      "id": "time-003",
+      "type": "relative",
+      "relativeTo": "time-002",
+      "offset": "+1d",
+      "chapter": 2,
+      "title": "离开村庄 (Leaving the Village)",
+      "description": "在生日的第二天，主角收到了来自王都的召唤，决定离开家乡。 (The day after his birthday, the protagonist receives a summons from the capital and decides to leave his hometown.)",
+      "charactersInvolved": ["protagonist-01"],
+      "tags": ["inciting-incident"]
+    },
+    {
+      "id": "time-004",
+      "type": "relative",
+      "relativeTo": "time-003",
+      "offset": "+2w",
+      "chapter": 4,
+      "title": "抵达王都 (Arrival at the Capital)",
+      "description": "经过两周的旅行，主角第一次抵达宏伟的王都。 (After a two-week journey, the protagonist arrives at the magnificent capital for the first time.)",
+      "charactersInvolved": ["protagonist-01", "support-A"],
+      "tags": ["new-world"]
+    }
+  ]
+}
+# =============== SECTION 3: 人物关系图模板 (Relationships Template) ===============
+# 源文件: spec/tracking/relationships.json
+# 作用: 动态追踪角色之间的情感和状态变化，确保角色互动的逻辑性和一致性 (Dynamically tracks emotional and status changes between characters to ensure logical and consistent interactions).
+
+## ————— 模板结构说明 (Template Structure Explanation) —————
+
+# "relationships" 是一个包含了所有关系链接对象的数组 (is an array containing all relationship link objects).
+# 每个关系链接对象都包含以下关键字段 (Each relationship link object contains the following key fields):
+
+# - "id": 关系的唯一标识符 (A unique identifier for the relationship).
+# - "source": 关系发起方的角色ID (The character ID of the relationship's source).
+# - "target": 关系指向方的角色ID (The character ID of the relationship's target).
+# - "type": 关系类型 (The type of relationship), e.g., "family", "friendship", "romance", "rivalry", "professional".
+# - "status": 当前关系状态 (The current status of the relationship), e.g., "allies", "enemies", "neutral", "strained", "loving", "one-sided-crush".
+# - "history": 记录关系变化历史的数组 (An array recording the history of relationship changes).
+#   - "chapter": 关系发生变化的章节 (The chapter where the relationship changed).
+#   - "description": 描述关系如何变化 (A description of how the relationship changed).
+# - "notes": 关于这段关系的额外备注 (Additional notes about this relationship).
+
+## ————— JSON模板示例 (JSON Template Example) —————
+# 这是AI需要理解和生成的JSON格式 (This is the JSON format the AI needs to understand and generate).
+
+```json
+{
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "relationships": [
+    {
+      "id": "rel-001",
+      "source": "protagonist-01",
+      "target": "mentor-01",
+      "type": "professional",
+      "status": "allies",
+      "history": [
+        {
+          "chapter": 1,
+          "description": "建立了师徒关系，充满敬意。 (Established a mentor-student relationship, full of respect.)"
+        }
+      ],
+      "notes": "导师是主角最信任的人。 (The mentor is the person the protagonist trusts the most.)"
+    },
+    {
+      "id": "rel-002",
+      "source": "protagonist-01",
+      "target": "antagonist-01",
+      "type": "rivalry",
+      "status": "enemies",
+      "history": [
+        {
+          "chapter": 10,
+          "description": "在王都的竞技场上，主角第一次被对手击败，二人结下梁子。 (In the capital's arena, the protagonist was defeated by the antagonist for the first time, marking the beginning of their feud.)"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "rel-003",
+      "source": "support-A",
+      "target": "protagonist-01",
+      "type": "romance",
+      "status": "one-sided-crush",
+      "history": [
+        {
+          "chapter": 4,
+          "description": "配角A在主角抵达王都时第一次见到他，并被他的善良所吸引。 (Supporting character A met the protagonist for the first time upon his arrival at the capital and was attracted by his kindness.)"
+        }
+      ],
+      "notes": "目前主角并未意识到这一点。 (Currently, the protagonist is unaware of this.)"
+    }
+  ]
+}
+# =============== SECTION 4: 角色状态追踪器模板 (Character State Tracker Template) ===============
+# 源文件: spec/tracking/character-state.json
+# 作用: 记录角色在关键节点的位置、物品和心理状态，确保角色状态的连续性 (Records character's location, items, and mental state at key nodes to ensure continuity).
+
+## ————— 模板结构说明 (Template Structure Explanation) —————
+
+# "characters" 是一个包含了所有被追踪角色的对象的数组 (is an array of objects for all tracked characters).
+# 每个角色对象都包含以下关键字段 (Each character object contains the following key fields):
+
+# - "characterId": 角色的唯一标识符 (The unique identifier for the character).
+# - "characterName": 角色的名字 (The name of the character).
+# - "states": 记录该角色不同时间点状态的数组 (An array recording the character's states at different points in time).
+#   - "chapter": 状态更新时所在的章节 (The chapter when the state was updated).
+#   - "locationId": 角色当前所在的位置ID (The ID of the character's current location).
+#   - "health": 健康状况 (Health status), e.g., "healthy", "injured", "exhausted".
+#   - "mood": 心情/情绪 (Mood/Emotion), e.g., "determined", "confused", "grieving".
+#   - "inventory": 持有的重要物品列表 (A list of important items held).
+#   - "knowledge": 最近获得的关键信息或知识 (Key information or knowledge recently acquired).
+
+## ————— JSON模板示例 (JSON Template Example) —————
+# 这是AI需要理解和生成的JSON格式 (This is the JSON format the AI needs to understand and generate).
+
+```json
+{
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "characters": [
+    {
+      "characterId": "protagonist-01",
+      "characterName": "主角A (Protagonist A)",
+      "states": [
+        {
+          "chapter": 1,
+          "locationId": "loc-windrest-village",
+          "health": "healthy",
+          "mood": "hopeful-and-naive",
+          "inventory": ["家传的吊坠 (Family Pendant)"],
+          "knowledge": ["知道了“星辰之心”的传说 (Learned the legend of the 'Heart of Stars')"]
+        },
+        {
+          "chapter": 5,
+          "locationId": "loc-forbidden-forest",
+          "health": "injured",
+          "mood": "frightened-but-determined",
+          "inventory": ["家传的吊坠 (Family Pendant)", "线索地图碎片A (Clue Map Fragment A)"],
+          "knowledge": ["森林里的怪物怕火 (The monsters in the forest are afraid of fire)"]
+        },
+        {
+          "chapter": 10,
+          "locationId": "loc-capital-arena",
+          "health": "exhausted",
+          "mood": "humiliated",
+          "inventory": ["家传的吊坠 (Family Pendant)", "线索地图碎片A (Clue Map Fragment A)"],
+          "knowledge": ["意识到自己与真正强者的差距 (Realized the gap between himself and the truly strong)"]
+        }
+      ]
+    },
+    {
+      "characterId": "support-A",
+      "characterName": "配角A (Support A)",
+      "states": [
+        {
+          "chapter": 4,
+          "locationId": "loc-capital-city",
+          "health": "healthy",
+          "mood": "curious",
+          "inventory": ["王室徽章 (Royal Emblem)"],
+          "knowledge": ["主角似乎与传说有关 (The protagonist seems to be related to the legend)"]
+        }
+      ]
+    }
+  ]
+}
+
+# === END OF FILE ===

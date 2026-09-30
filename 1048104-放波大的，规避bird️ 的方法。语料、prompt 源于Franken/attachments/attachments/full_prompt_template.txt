@@ -1,0 +1,54 @@
+Frankentexts 处理 指令模板（完整高级版）
+
+请在上传小说文件后，把下面的字段按需填写并与文件一起发送给我。我会严格按字段执行并返回 JSONL（或 CSV/ZIP）。
+
+=== 指令开始 (请完整填写) ===
+
+1) 输入文件： 已上传的文件名或“附件”
+2) 输出格式（jsonl/csv/zip）： jsonl
+3) 每片段最大 token（max_tokens）： 512
+4) 每片段最小 token（min_tokens）： 20
+5) 采样数量（sample_k，0 表示不采样）： 1500
+6) 去重（dedup，yes/no）： yes
+7) 语言限制（lang，zh/en/auto）： zh
+8) 分段方法（method）（选择其一）：
+   - paragraph（以段落/空行分割）
+   - sentence（以句子为单位，适合更细粒度）
+   - hybrid（先段落后句子切分长段）
+   请选择： hybrid
+9) 保留/删除策略（preserve）：用逗号分隔
+   - keep_dialogue（保留短对白，如“他说：...”）
+   - remove_chapter_titles（删除“第X章”类标题）
+   - strip_headers_footers（移除页眉页脚常见版权/目录）
+   示例： keep_dialogue, remove_chapter_titles, strip_headers_footers
+10) token 计数方式（tokenizer）： auto（粗略词/符号计数） / tiktoken（精准，需要额外环境）
+    请选择： auto
+11) 输出字段（默认 id,text,tokens,source，可自定义以逗号分隔）： id,text,tokens,source
+12) 额外要求（可选）： 如“更细分对白以获得更多短片段”或“排除广告/版权页”等。
+
+示例填写：
+我已上传：novel.txt
+输出格式：jsonl
+max_tokens：512
+min_tokens：20
+sample_k：1500
+dedup：yes
+language：zh
+method：hybrid
+preserve：keep_dialogue, remove_chapter_titles, strip_headers_footers
+tokenizer：auto
+输出字段：id,text,tokens,source
+额外要求：无
+
+=== 指令结束 ===
+
+处理流程说明（我会这样做）:
+- 读取上传文件（支持 .txt / .pdf）
+- 清理元数据（作者/简介/目录/版权）与多余空行（可根据 preserve 调整）
+- 分段（按 method）并对过长段按句子切分合并到 max_tokens
+- 过滤（小于 min_tokens、章节号、纯符号、过度英文/数字噪音等）
+- 去重（如 dedup=yes）
+- 随机采样（如 sample_k>0 且总片段多于 sample_k）
+- 输出 JSONL/CSV/ZIP，每行含选定字段
+
+版权提醒：请仅上传你有权处理的文本（公开领域/你本人创作/或有使用权）。

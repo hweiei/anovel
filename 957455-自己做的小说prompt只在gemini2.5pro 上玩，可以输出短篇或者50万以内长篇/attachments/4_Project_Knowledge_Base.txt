@@ -1,0 +1,294 @@
+# === FILE: 4_Project_Knowledge_Base.txt ===
+# 本文件是小说的核心知识库，是所有设定的唯一事实来源 (This file is the core knowledge base for the novel, serving as the single source of truth for all settings).
+# AI在执行 /write 命令时必须时刻参考此文件以确保一致性 (The AI must constantly refer to this file when executing the /write command to ensure consistency).
+
+# =============== SECTION 1: 角色档案 (Character Profiles) ===============
+# 作用: 定义和存储所有角色的详细信息 (Defines and stores detailed information for all characters).
+
+## ————— 主角 (Protagonist) —————
+
+### [主角姓名]
+
+#### 1.1 基础信息 (Basic Information)
+- **年龄 (Age):**
+- **性别 (Gender):**
+- **身份/职业 (Identity/Occupation):**
+- **出身背景 (Background):**
+
+#### 1.2 外貌特征 (Appearance)
+- **身高体型 (Height/Build):**
+- **相貌特点 (Facial Features):**
+- **穿着风格 (Clothing Style):**
+- **特殊标记 (Distinctive Marks):**
+
+#### 1.3 性格特征 (Personality Traits)
+- **核心性格 (Core Personality):** [3-5个关键词]
+- **优点 (Strengths):**
+- **缺点 (Weaknesses):**
+- **行为习惯 (Habits):**
+- **说话方式 (Manner of Speaking):**
+
+#### 1.4 能力设定 (Abilities)
+- **特殊能力/金手指 (Special Abilities/System):**
+- **技能特长 (Skills):**
+- **战斗力 (Combat Power):**
+- **智力水平 (Intelligence Level):**
+- **弱点 (Weaknesses):**
+
+#### 1.5 背景故事 (Backstory)
+[详细的人物背景故事]
+- **童年经历 (Childhood):**
+- **成长历程 (Adolescence):**
+- **重要事件 (Key Events):**
+- **人生转折 (Turning Points):**
+
+#### 1.6 人物动机 (Motivations)
+- **核心追求 (Core Desire):** [角色最想要的是什么？]
+- **内心恐惧 (Inner Fear):** [角色最害怕的是什么？]
+- **价值观 (Values):**
+- **人生目标 (Life Goal):**
+
+#### 1.7 成长规划 (Character Arc)
+- **初期状态 (Initial State):**
+- **中期发展 (Mid-point Development):**
+- **后期蜕变 (Later Transformation):**
+- **最终形态 (Final Form):**
+
+#### 1.8 人际关系 (Relationships)
+- **家人 (Family):**
+- **朋友 (Friends):**
+- **敌人 (Enemies):**
+- **爱人 (Love Interest):**
+- **导师 (Mentor):**
+
+---
+
+## ————— 重要配角 (Major Supporting Characters) —————
+
+### [配角姓名]
+
+#### 2.1 基础信息 (Basic Information)
+- **角色定位 (Role):** [如：导师/对手/伙伴/爱人]
+- **与主角关系 (Relation to Protagonist):**
+- **出场章节 (First Appearance):**
+- **重要程度 (Importance):** ⭐⭐⭐⭐⭐ (1-5星)
+
+#### 2.2 人物特征 (Characteristics)
+- **外貌简述 (Brief Appearance):**
+- **性格要点 (Key Personality Traits):**
+- **能力水平 (Ability Level):**
+- **说话风格 (Speech Style):**
+
+#### 2.3 角色功能 (Function in Story)
+- **剧情作用 (Plot Role):**
+- **推动主线 (How they drive the main plot):**
+- **性格对比 (How they contrast with the protagonist):**
+
+#### 2.4 简要背景 (Brief Background)
+[简要背景说明]
+
+#### 2.5 发展轨迹 (Development Trajectory)
+- **初次登场 (Introduction):**
+- **关系变化 (Relationship Arc):**
+- **最终去向 (Final Fate):**
+
+---
+
+## ————— 次要角色 (Minor Characters) —————
+
+### [角色组/势力名称]
+
+#### 3.1 群体角色 (Group Characters)
+- **所属组织 (Organization):**
+- **共同特征 (Common Traits):**
+- **代表人物 (Representative Figure):**
+
+#### 3.2 功能角色 (Functional Characters)
+| 姓名 (Name) | 身份 (Identity) | 作用 (Function) | 出场章节 (Appearance) | 备注 (Notes) |
+|---|---|---|---|---|
+| | | | | |
+| | | | | |
+
+---
+
+## ————— 角色关系图谱 (Character Relationship Map) —————
+
+### 4.1 主要关系线 (Main Relationship Lines)
+
+[主角] ─── (爱慕/Love) ──→ [角色A]
+│                         ↑
+│                         │ (敌对/Hostility)
+├── (师徒/Mentor) ──→ [角色B] │
+│                         │
+└── (对手/Rival) ←── [角色C]──┘
+
+### 4.2 势力关系 (Faction Relationships)
+- **正派阵营 (Protagonist Faction):**
+- **反派阵营 (Antagonist Faction):**
+- **中立势力 (Neutral Faction):**
+
+---
+
+# =============== SECTION 2: 世界观设定 (World Setting) ===============
+# 作用: 建立故事世界的宏观规则、背景和核心概念 (Establishes the macro rules, background, and core concepts of the story world).
+
+## ————— 世界概述 (World Overview) —————
+
+#### 1.1 核心概念 (Core Concept)
+- **一句话概括 (One-Sentence Summary):** [例如：一个魔法与科技共存，但魔力正在衰退的赛博朋克世界。]
+- **世界基调 (Tone and Mood):** [例如：黑暗、压抑，但仍有一线希望 (Dark, oppressive, yet with a glimmer of hope).]
+- **灵感来源 (Inspiration):** [例如：《银翼杀手》、《最终幻想7》]
+
+#### 1.2 宇宙观与历史 (Cosmology & History)
+- **创世神话 (Creation Myth):** [这个世界是如何诞生的？]
+- **重大历史事件 (Major Historical Events):**
+    - **上古战争 (Ancient War):** [描述与影响]
+    - **技术革命 (Technological Revolution):** [描述与影响]
+    - **“大灾变” (The Cataclysm):** [描述与影响]
+- **当前所处时代 (Current Era):** [对当前时代的命名和描述]
+
+---
+
+## ————— 物理与自然法则 (Physics & Natural Laws) —————
+
+#### 2.1 物理规则 (Physical Laws)
+- **与现实世界的差异 (Differences from Reality):** [是否存在反重力、超光速旅行等？]
+- **基本元素/力量 (Fundamental Elements/Forces):** [除了常规的物理规则，是否有其他主导世界的力量？]
+
+#### 2.2 地理与生态 (Geography & Ecology)
+- **世界地图 (World Map):** [可以是一个简要的描述或链接]
+- **主要大陆/国家 (Main Continents/Nations):**
+- **气候特征 (Climate Characteristics):**
+- **奇特地貌 (Unique Landforms):** [例如：浮空岛、水晶森林]
+- **特殊物种 (Special Species):** [这个世界独有的动植物]
+
+---
+
+## ————— 社会与文明 (Society & Civilization) —————
+
+#### 3.1 政治结构 (Political Structure)
+- **主要政体 (Main Political Systems):** [例如：帝国、联邦、城邦联盟]
+- **统治势力 (Ruling Factions):**
+    - **[势力A]:** [理念、领袖、实力范围]
+    - **[势力B]:** [理念、领袖、实力范围]
+- **法律体系 (Legal System):** [法律的严苛程度、特色法规]
+
+#### 3.2 经济体系 (Economic System)
+- **货币体系 (Currency System):** [通用货币是什么？]
+- **主要产业/资源 (Key Industries/Resources):**
+- **贸易状况 (Trade Status):** [主要贸易路线、商品]
+
+#### 3.3 文化与习俗 (Culture & Customs)
+- **种族构成 (Races):** [人类、精灵、矮人、或其他原创种族]
+- **语言文字 (Languages & Writing):**
+- **宗教信仰 (Religions & Beliefs):**
+- **艺术与娱乐 (Arts & Entertainment):**
+- **社会习俗/禁忌 (Social Customs/Taboos):**
+
+---
+
+## ————— 特殊系统 (Special Systems) —————
+
+#### 4.1 力量体系 (Power System)
+- **体系名称 (System Name):** [例如：灵力、魔导、源能]
+- **力量来源 (Source of Power):**
+- **表现形式 (Manifestations):** [如何使用这种力量？]
+- **等级划分 (Power Tiers/Levels):**
+    - **等级1:** [名称与能力]
+    - **等级2:** [名称与能力]
+    - ...
+- **核心规则与限制 (Core Rules & Limitations):** [使用力量需要付出什么代价？有什么限制？]
+
+#### 4.2 科技水平 (Technology Level)
+- **总体水平 (Overall Level):** [例如：蒸汽朋克、赛博朋克、近未来]
+- **标志性科技 (Signature Technologies):** [这个世界最著名的科技产品是什么？]
+- **能源系统 (Energy Sources):**
+- **交通与通讯 (Transportation & Communication):**
+
+---
+
+# =============== SECTION 3: 地点设定 (Locations) ===============
+# 作用: 提供故事中重要地点的详细描述，为场景写作提供具体素材 (Provides detailed descriptions of important locations in the story, offering concrete material for scene writing).
+
+## ————— 主要国家/城市 (Major Countries/Cities) —————
+
+### 1.1 [国家/城市名称]
+- **一句话描述 (One-Sentence Description):** [例如：一座漂浮在云端的魔法与科技之城。]
+- **整体氛围 (Overall Atmosphere):** [例如：庄严、神秘、秩序井然。]
+- **建筑风格 (Architectural Style):** [例如：哥特式尖顶与赛博朋克霓虹灯的结合。]
+- **所属势力 (Affiliation):**
+- **知名地标 (Landmarks):**
+    - **[地标A]:** [描述]
+    - **[地标B]:** [描述]
+- **风土人情 (Local Customs):**
+- **在故事中的作用 (Role in the Story):**
+
+---
+
+## ————— 关键场景 (Key Scenes) —————
+
+### 2.1 [场景名称 - 例如：主角的家]
+- **地点类型 (Location Type):** [例如：住宅/商店/自然景观]
+- **位置 (Position):** [位于哪个国家/城市]
+- **感官描述 (Sensory Details):**
+    - **视觉 (Sight):**
+    - **听觉 (Sound):**
+    - **嗅觉 (Smell):**
+    - **触觉 (Touch):**
+- **内部布局 (Layout):**
+- **特殊物品 (Special Items):**
+- **发生的关键情节 (Key Events Occurring Here):**
+
+### 2.2 [场景名称 - 例如：禁忌森林]
+- **地点类型 (Location Type):** [自然景观]
+- **位置 (Position):** [城外东方]
+- **感官描述 (Sensory Details):**
+    - **视觉 (Sight):** [例如：扭曲的树木，终年不散的迷雾，发光的菌类。]
+    - **听觉 (Sound):** [例如：远处未知的兽吼，寂静中的树叶沙沙声。]
+    - **嗅觉 (Smell):** [例如：潮湿腐烂的泥土气息。]
+    - **触觉 (Touch):** [例如：冰冷湿滑的空气。]
+- **危险与机遇 (Dangers & Opportunities):**
+- **发生的关键情节 (Key Events Occurring Here):** [例如：主角第一次遭遇危机，获得重要道具。]
+
+---
+
+# =============== SECTION 4: 角色语言风格 (Character Voices) ===============
+# 作用: 定义每个主要角色的独特说话方式，确保对话的真实性和区分度 (Defines the unique speaking style of each main character to ensure authentic and distinct dialogue).
+
+## ————— 角色声音设计 (Character Voice Design) —————
+
+### 1.1 [主角姓名]
+- **声音特质 (Voice Quality):** [例如：清晰、沉稳，语速偏快。]
+- **口头禅/常用语 (Catchphrases/Common Phrases):**
+- **词汇偏好 (Vocabulary Preference):** [例如：喜欢使用比喻、偶尔会用一些古词。]
+- **语法习惯 (Grammar Style):** [例如：句子结构严谨，逻辑性强。]
+- **情绪表达 (Emotional Expression):**
+    - **高兴时 (When Happy):** [会变得健谈，偶尔开玩笑。]
+    - **愤怒时 (When Angry):** [言语变得简短、尖锐，充满压迫感。]
+    - **紧张时 (When Nervous):** [会下意识地重复某个词。]
+- **对话示例 (Dialogue Example):**
+> “[示例对话，充分体现以上所有特点。]”
+
+### 1.2 [重要配角A - 导师]
+- **声音特质 (Voice Quality):** [苍老、温和，语速缓慢而有力。]
+- **口头禅/常用语 (Catchphrases/Common Phrases):** “孩子，你要记住...”
+- **词汇偏好 (Vocabulary Preference):** [喜欢用富有哲理的词汇和古老的谚语。]
+- **语法习惯 (Grammar Style):** [句子较长，喜欢用引导性的反问句。]
+- **情绪表达 (Emotional Expression):**
+    - **高兴时 (When Happy):** [声音会变得洪亮，充满笑意。]
+    - **愤怒时 (When Angry):** [会沉默，或者用非常平静的语气说出严厉的话。]
+- **对话示例 (Dialogue Example):**
+> “[示例对话，充分体现以上所有特点。]”
+
+### 1.3 [重要配角B - 对手]
+- **声音特质 (Voice Quality):** [优雅但冰冷，带有嘲讽意味。]
+- **口头禅/常用语 (Catchphrases/Common Phrases):** “哦？真是有趣。”
+- **词汇偏好 (Vocabulary Preference):** [用词华丽、精准，喜欢揭示他人语言中的漏洞。]
+- **语法习惯 (Grammar Style):** [句子结构复杂，喜欢使用排比和讽刺。]
+- **情绪表达 (Emotional Expression):** [很少表露真实情绪，大部分时候都保持着一种玩味的姿态。]
+- **对话示例 (Dialogue Example):**
+> “[示例对话，充分体现以上所有特点。]”
+
+---
+
+# === END OF FILE ===

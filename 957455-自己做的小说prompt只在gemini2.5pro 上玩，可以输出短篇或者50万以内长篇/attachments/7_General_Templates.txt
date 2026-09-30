@@ -1,0 +1,168 @@
+# === FILE: 7_General_Templates.txt ===
+# 本文件存放不属于特定叙事结构，但非常通用的模板文件 (This file stores general-purpose template files that do not belong to any specific narrative structure).
+# 作用: 为快速启动新项目或构思提供基础框架 (Purpose: To provide a basic framework for quickly starting new projects or brainstorming ideas).
+
+# =============== SECTION 1: 通用故事模板 (General Story Template) ===============
+# 源文件: .specify/templates/story-template.md
+# 作用: 提供一个灵活的、与特定方法论无关的故事大纲模板 (Provides a flexible story outline template that is independent of any specific methodology).
+
+# 小说：[作品标题]
+
+## 基本信息 (Basic Information)
+- **类型 (Genre)**：[科幻/奇幻/现实/历史/言情/悬疑/武侠/仙侠等]
+- **字数目标 (Target Word Count)**：[预计总字数，如：30万字]
+- **目标读者 (Target Audience)**：[读者群体描述，如：喜欢硬科幻的成年读者]
+- **创作状态 (Status)**：构思中
+
+## 故事内核 (Core Concept)
+
+### 一句话故事 (Logline)
+[用一句话概括整个故事，如：一个失忆的人工智能在寻找自我的过程中拯救了人类]
+
+### 核心冲突 (Core Conflict)
+[主要矛盾和张力来源，如：个体自由vs集体利益]
+
+### 主题思想 (Theme)
+[想要表达的核心思想和价值观，如：探讨人性与科技的边界]
+
+## 角色设定 (Character Settings)
+
+### 主角 (Protagonist)
+- **姓名 (Name)**：[主角名字]
+- **年龄/性别 (Age/Gender)**：[如：28岁/女]
+- **性格特征 (Personality Traits)**：[3-5个关键词，如：坚韧、聪明、孤独]
+- **背景故事 (Backstory)**：[简述成长经历和重要事件]
+- **核心动机 (Core Motivation)**：[驱动角色行动的根本欲望]
+- **成长弧线 (Character Arc)**：[从什么状态变化到什么状态]
+- **特殊能力 (Special Abilities)**：[如有，描述特殊技能或才能]
+- **弱点缺陷 (Flaws/Weaknesses)**：[性格或能力上的短板]
+
+### 重要配角 (Major Supporting Characters)
+
+#### [配角1名字]
+- **角色定位 (Role)**：[如：导师/对手/伙伴/爱人]
+- **与主角关系 (Relationship to Protagonist)**：[具体关系描述]
+- **性格特征 (Personality Traits)**：[2-3个关键词]
+- **功能作用 (Function in Story)**：[在故事中的作用]
+
+## 世界观设定 (World Setting)
+
+### 时代背景 (Era/Time Period)
+[故事发生的时间，如：2045年/架空古代/平行世界现代]
+
+### 地理环境 (Geography/Environment)
+[故事发生的主要地点，可以列出多个重要场景]
+- **主要场景1 (Primary Location 1)**：[地点描述]
+- **主要场景2 (Primary Location 2)**：[地点描述]
+
+### 社会结构 (Social Structure)
+[这个世界的社会组织形式、阶层划分、权力结构等]
+
+### 特殊规则 (Special Rules)
+[这个世界独有的规则，如：魔法体系/科技水平/社会禁忌]
+
+## 情节大纲 (Plot Outline)
+
+### 第一幕：开端 (Act 1: The Beginning - Approx. 25%)
+- **平常世界 (The Ordinary World)**：[主角的日常生活状态]
+- **引入冲突 (Inciting Incident)**：[打破平静的事件]
+- **触发事件 (Call to Action)**：[改变主角命运的关键事件]
+- **跨越门槛 (Crossing the Threshold)**：[主角决定踏上冒险]
+
+### 第二幕：发展 (Act 2: The Middle - Approx. 50%)
+- **新世界探索 (Exploration of the New World)**：[主角适应新环境/新挑战]
+- **上升行动 (Rising Action)**：[结识盟友与敌人，遭遇一系列考验]
+- **中点转折 (Midpoint)**：[改变局势的关键信息或事件，可能是假性胜利或失败]
+- **至暗时刻 (All Is Lost)**：[最大的危机和绝望]
+
+### 第三幕：高潮与结局 (Act 3: The End - Approx. 25%)
+- **最终准备 (Final Preparations)**：[集结力量，制定计划]
+- **最终对决 (Climax)**：[与主要对手的决战]
+- **结局收尾 (Resolution)**：[冲突解决，新的平衡]
+- **尾声余韵 (Epilogue)**：[展望未来或留下思考]
+
+## 创作备注 (Author's Notes)
+
+### 灵感来源 (Inspiration)
+[记录灵感的来源，如：某个梦/新闻事件/其他作品]
+
+### 参考作品 (References)
+[列出参考的小说、电影、游戏等]
+
+### 风格定位 (Style)
+[整体的创作风格，如：黑暗写实/轻松幽默/史诗奇幻]
+
+---
+
+# =============== SECTION 2: 通用大纲模板 (General Outline Template) ===============
+# 源文件: .specify/templates/outline-template.md
+# 作用: 提供一个详细的、用于规划章节和管理故事节奏的通用模板 (Provides a detailed, general-purpose template for planning chapters and managing story pace).
+
+# 章节规划：[作品标题]
+
+## 整体结构 (Overall Structure)
+- **总章节数 (Total Chapters)**：[预计章节数，如：120章]
+- **平均章节字数 (Average Chapter Length)**：[每章平均字数，如：3000字]
+- **预计总字数 (Estimated Total Word Count)**：[总字数，如：36万字]
+
+## 卷册划分 (Volume/Book Division)
+
+### 第一卷：[卷名，如：觉醒篇] (Volume 1: [Volume Title, e.g., The Awakening])
+- **主题 (Theme)**：[本卷的核心主题]
+- **章节范围 (Chapter Range)**：第1-30章
+- **情节概要 (Plot Summary)**：[本卷主要剧情]
+- **核心冲突 (Core Conflict)**：[本卷的主要矛盾]
+- **结局钩子 (Ending Hook)**：[引出下一卷的悬念]
+
+### 第二卷：[卷名] (Volume 2: [Volume Title])
+- ...
+
+## 详细章节大纲 (Detailed Chapter Outline)
+
+### 第一卷详细大纲 (Volume 1 Detailed Outline)
+
+#### 第1章：[章节标题] (Chapter 1: [Chapter Title])
+- **视角人物 (Point of View)**：[本章的叙述视角，如：主角/配角名]
+- **时间地点 (Time & Place)**：[具体的时空设置]
+- **章节摘要 (Chapter Summary)**：[50字以内的内容概括]
+- **主要事件 (Major Events)**：
+  1. [事件1]
+  2. [事件2]
+  3. [事件3]
+- **角色登场 (Characters Introduced)**：[新登场的角色]
+- **角色发展 (Character Development)**：[角色在本章的变化]
+- **情节功能 (Plot Function)**：[推进主线/铺设伏笔/角色成长/世界观展示]
+- **伏笔设置 (Foreshadowing - Setup)**：[如有]
+- **回收伏笔 (Foreshadowing - Payoff)**：[如有]
+- **情绪基调 (Emotional Tone)**：[紧张/轻松/悲伤/热血/神秘]
+- **关键对话 (Key Dialogue)**：[重要台词提示]
+
+#### 第2章：[章节标题] (Chapter 2: [Chapter Title])
+[按照第1章的格式继续...]
+
+## 节奏与悬念管理 (Pacing and Suspense Management)
+
+### 整体节奏规划 (Overall Pacing Plan)
+- **慢热期 (Slow Burn)**：第1-5章（世界观铺垫，角色介绍）
+- **渐入佳境 (Picking Up Steam)**：第6-15章（冲突显现，剧情推进）
+- **第一波高潮 (First Climax)**：第16-20章（首个重大冲突）
+- **中段爆发 (Midpoint Climax)**：第31-40章（重大转折）
+- **最终高潮 (Final Climax)**：第101-115章（终极对决）
+- **尾声 (Resolution)**：第116-120章（收束与余韵）
+
+### 悬念与伏笔管理 (Suspense & Foreshadowing Management)
+
+#### 主要悬念线 (Main Suspense Threads)
+1. **悬念1 (Suspense 1)**：[悬念描述]
+   - **设置章节 (Setup Chapter)**：第X章
+   - **暗示章节 (Hint Chapters)**：第X, X, X章
+   - **揭示章节 (Reveal Chapter)**：第X章
+
+#### 伏笔清单 (Foreshadowing Checklist)
+| 伏笔 (Foreshadowing) | 埋设章节 (Setup Ch.) | 回收章节 (Payoff Ch.) | 重要度 (Importance) |
+|---|---|---|---|
+| [伏笔1] | 第X章 | 第X章 | 高 (High) |
+| [伏笔2] | 第X章 | 第X章 | 中 (Medium) |
+| [伏笔3] | 第X章 | 第X章 | 低 (Low) |
+
+---

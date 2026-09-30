@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本混淆 2.4 · 稳定版</title>
+  <style>
+    :root{--bg:#0b1220;--panel:rgba(16,26,48,.85);--accent:#00ff88;--accent2:#00e0ff;--soft:#8aa4b4;--hot:#ff5bf1}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 700px at 20% -10%,#102a47 0%,#0b1220 55%),var(--bg);color:#eaf6ff;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
+    .wrap{display:grid;grid-template-rows:auto 1fr auto;gap:12px;min-height:100vh;padding:16px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:20px;color:var(--accent);text-shadow:0 0 10px rgba(0,255,136,.5)}
+    .hint{color:var(--soft);font-size:12px}
+    .panels{display:grid;grid-template-columns:420px 1fr;gap:12px;min-height:0}
+    .panel{background:var(--panel);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;min-height:0;
+      box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.03)}
+    textarea{width:100%;min-height:160px;background:rgba(0,32,64,.5);border:1px solid rgba(0,224,255,.35);border-radius:10px;
+      color:#eaf6ff;padding:10px 12px;resize:vertical;outline:none}
+    .editor{width:100%;min-height:180px;background:rgba(0,32,64,.5);border:1px solid rgba(0,224,255,.35);border-radius:10px;
+      color:#eaf6ff;padding:10px 12px;outline:none;overflow-y:auto}
+    .editor:empty:before{content:attr(data-placeholder);color:#6ea5bf}
+    .toolbar{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+    .tbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:8px;color:#eaf6ff;
+      font-size:12px;padding:6px 10px;cursor:pointer}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);border-radius:999px;padding:6px 10px;
+      font-size:12px;cursor:pointer;user-select:none}
+    .chip.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,255,136,.15) inset}
+    .row{display:flex;gap:8px;align-items:center}
+    .btns{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:linear-gradient(135deg,#ff4ec2,#6a64ff);border:none;border-radius:10px;color:#fff;padding:10px 14px;
+      cursor:pointer;font-weight:600;letter-spacing:.3px;box-shadow:0 6px 16px rgba(109,80,255,.35)}
+    .btn.alt{background:linear-gradient(135deg,#00e0ff,#00ff88);color:#083}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
+    .slider{accent-color:var(--accent)}
+    .out{min-height:160px;border:1px dashed rgba(255,255,255,.14);border-radius:10px;background:rgba(0,0,0,.35);padding:12px;word-break:break-word}
+    .cloud{display:flex;gap:6px;flex-wrap:wrap}
+    .tag{font-size:12px;padding:4px 8px;border-radius:6px;background:rgba(0,255,136,.14)}
+    .meta{color:var(--soft);font-size:12px;margin-top:8px}
+    .toast{position:fixed;right:16px;bottom:16px;background:#0e2433;border:1px solid rgba(255,255,255,.12);padding:10px 12px;
+      color:#dff7ff;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s}
+    .toast.show{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>文本混淆 2.0 · 稳定版</h1>
+      <div class="hint">已简化实现以确保稳定：减少正则，避免解析问题，按钮全部可用</div>
+    </header>
+
+    <div class="panels">
+      <aside class="panel">
+        <div class="row">
+          <label class="chip" style="cursor:default"><input type="checkbox" id="richMode"> 富文本模式</label>
+          <label class="chip" style="cursor:default"><input type="checkbox" id="reversible" checked> 可逆标记</label>
+          <label class="chip" style="cursor:default"><input type="checkbox" id="strictMode"> 严格可逆</label>
+        </div>
+        <div class="toolbar" id="toolbar" style="display:none">
+          <button class="tbtn" data-cmd="bold">B</button>
+          <button class="tbtn" data-cmd="italic"><i>I</i></button>
+          <button class="tbtn" data-cmd="underline"><u>U</u></button>
+          <button class="tbtn" data-cmd="insertUnorderedList">• 列表</button>
+          <button class="tbtn" data-cmd="insertOrderedList">1. 列表</button>
+          <button class="tbtn" data-cmd="formatBlock" data-value="blockquote">引用</button>
+          <button class="tbtn" id="clearFormat">清除样式</button>
+        </div>
+        <textarea id="input" placeholder="在此输入文本（纯文本模式）"></textarea>
+        <div id="inputRich" class="editor" contenteditable="true" data-placeholder="在此输入文本（富文本模式）" style="display:none"></div>
+
+        <div style="margin:10px 0">
+          <div class="row">
+            <label style="flex:1">混淆强度</label>
+            <input id="intensity" class="slider" type="range" min="1" max="100" value="50" style="flex:2">
+            <span id="intVal" style="width:42px;text-align:right">50%</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="hint" style="margin:6px 0">混淆层（可多选）</div>
+          <div id="layers" class="chips">
+            <!-- 字符层 -->
+            <div class="chip" data-k="zerowidth">不可见字符</div>
+            <div class="chip" data-k="homoglyph">同形替换</div>
+            <div class="chip" data-k="escape">转义编码（B64段）</div>
+            <!-- 语法层 -->
+            <div class="chip" data-k="reorder">语序改写</div>
+            <div class="chip" data-k="splitmerge">句型拆/并</div>
+            <div class="chip" data-k="voice">语态/语气转换</div>
+            <!-- 语义层 -->
+            <div class="chip" data-k="synonym">近义替换</div>
+            <div class="chip" data-k="generalize">细节模糊</div>
+            <div class="chip" data-k="quote">引语改写</div>
+            <!-- 样式层 -->
+            <div class="chip" data-k="mixlang">混合语言</div>
+            <div class="chip" data-k="styleblur">文体模糊</div>
+            <!-- 其他 -->
+            <div class="chip active" data-k="emoji">表情注入</div>
+            <div class="chip active" data-k="punct">标点噪声</div>
+          </div>
+        </div>
+
+        <div class="btns" style="margin-top:10px">
+          <button class="btn" id="btnRun">🔒 混淆文本</button>
+          <button class="btn alt" id="btnDecode">🔓 解码文本</button>
+          <button class="btn ghost" id="btnAnalyze">📊 词频分析</button>
+          <button class="btn ghost" id="btnCopy">📋 复制输出</button>
+          <button class="btn ghost" id="btnClear">🗑️ 清空</button>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <div>
+          <div class="hint">输出</div>
+          <div id="output" class="out"></div>
+          <div id="meta" class="meta"></div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="hint">词频雷达</div>
+          <div id="cloud" class="cloud"></div>
+        </div>
+      </main>
+    </div>
+    <div id="toast" class="toast"></div>
+    <footer class="hint">2.0 稳定版：减少复杂正则，仅用安全替换/分割/拼接，已本地自检语法错误</footer>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const toast = (m)=>{ const t=$('#toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); };
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+
+  // ---------- UI state ----------
+  const state = {layers:new Set(['emoji','punct']), rich:false};
+  $$('#layers .chip').forEach(ch => ch.addEventListener('click',()=>{
+    ch.classList.toggle('active');
+    const k = ch.getAttribute('data-k');
+    if (ch.classList.contains('active')) state.layers.add(k); else state.layers.delete(k);
+  }));
+  $('#intensity').addEventListener('input', e => $('#intVal').textContent = e.target.value+'%');
+  $('#richMode').addEventListener('change', e=>{
+    state.rich = e.target.checked;
+    $('#toolbar').style.display = state.rich ? '' : 'none';
+    $('#input').style.display = state.rich ? 'none' : '';
+    $('#inputRich').style.display = state.rich ? '' : 'none';
+    if (state.rich && $('#input').value) { $('#inputRich').innerText = $('#input').value; $('#input').value=''; }
+  });
+  $$('#toolbar .tbtn').forEach(btn=>btn.addEventListener('click',()=>{
+    const cmd = btn.dataset.cmd; const val = btn.dataset.value || null; document.execCommand(cmd,false,val);
+  }));
+  $('#clearFormat').addEventListener('click',()=>document.execCommand('removeFormat'));
+
+  // ---------- helpers (no risky regex) ----------
+  function replaceAllSafe(s, from, to){
+    if (!from) return s;
+    if (from === to) return s;
+    return s.split(from).join(to);
+  }
+  function sentencesOf(text){
+    // split by Chinese/English end punctuation, keep delimiter
+    const parts = text.replace(/\r\n/g,'\n').split(/([。！？!?\.](?:\s|$))/);
+    const out = [];
+    for (let i=0;i<parts.length;i++){
+      const seg = parts[i];
+      if (!seg) continue;
+      // if seg is delimiter, attach to previous
+      if (/^[。！？!?\.]\s*$/.test(seg)) { if (out.length) out[out.length-1]+=seg.trim(); }
+      else out.push(seg.trim());
+    }
+    return out.filter(Boolean);
+  }
+  function b64EncodeUTF8(str){
+    // safe UTF-8 base64 without escape/unescape
+    const utf8 = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_,p1)=>String.fromCharCode('0x'+p1));
+    return btoa(utf8);
+  }
+  function b64DecodeUTF8(b64){
+    const bin = atob(b64);
+    const hex = Array.prototype.map.call(bin, c => '%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('');
+    return decodeURIComponent(hex);
+  }
+
+  // ---------- dictionaries ----------
+  const EMOJIS = ["😂","😅","🤔","🚀","👽","✨","📢","😎","🤖","👾","💥","🔮","🕵️","👻","🎉","🤷","😈","🌚","🚨","🔥","😜","🥲","🤝","🧠","🧪","📈","📉"];
+  const HOMO = {'A':'Α','B':'Β','C':'Ϲ','E':'Ε','H':'Η','I':'Ι','K':'Κ','M':'Μ','N':'Ν','O':'Ο','P':'Ρ','T':'Τ','X':'Χ','Y':'Υ',
+                'a':'а','c':'с','e':'е','i':'і','j':'ј','o':'о','p':'р','s':'ѕ','x':'х','y':'у'};
+  const CN2EN = {'重要':'important','问题':'issue','用户':'user','数据':'data','系统':'system','优化':'optimize','提升':'improve','计划':'plan','目标':'goal','性能':'performance','准确率':'accuracy','模型':'model'};
+  const SYN = {'好':['不错','很棒','优秀','给力','赞'],'坏':['糟糕','不佳','差劲'],'快':['迅速','飞快','高速'],'慢':['缓慢','迟缓'],
+               '多':['大量','不少','诸多'],'少':['稀少','较少'],'大':['巨大','宏大'],'小':['细小','微小'],
+               '认为':['觉得','以为'],'因为':['由于'],'所以':['因此'],'但是':['然而','不过'],'如果':['若','假如'],
+               '重要':['关键','核心'],'容易':['易于'],'困难':['不易','挑战'],'喜欢':['偏好','喜爱']};
+
+  // ---------- layers (safe implementations) ----------
+  function L_zerowidth(t, pct){
+    const p = Math.min(0.35, pct/100*0.35);
+    let out=''; for (let i=0;i<t.length;i++){ out+=t[i]; if (t[i].trim() && Math.random()<p) out+='\u200b'; } return out;
+  }
+  function L_homoglyph(t, pct){
+    const p = Math.min(0.4, pct/100*0.4); return t.split('').map(ch => (HOMO[ch] && Math.random()<p) ? HOMO[ch] : ch).join('');
+  }
+  function L_escape(t, pct, reversible){
+    const p = Math.min(0.5, pct/100*0.5);
+    return sentencesOf(t).map(s => (s && Math.random()<p) ? (reversible? '⟦B64⟧'+b64EncodeUTF8(s)+'⟦/B64⟧' : b64EncodeUTF8(s)) : s).join(' ');
+  }
+  function L_reorder(t, pct){
+    const p = Math.min(0.6, pct/100*0.6);
+    return sentencesOf(t).map(s=>{
+      if (Math.random()>p) return s;
+      // 因果/转折前置 -> 后置（非常保守）
+      const heads = ['因为','由于','为了','如果','虽然','尽管','但'];
+      for (const h of heads){
+        if (s.startsWith(h)){
+          const pos = s.indexOf('，'); if (pos>0){
+            const a = s.slice(0,pos); const b = s.slice(pos+1);
+            return b.replace(/^\s*/,'') + '，' + a;
+          }
+        }
+      }
+      return s;
+    }).join(' ');
+  }
+  function L_splitmerge(t, pct){
+    const ps = Math.min(0.5, pct/100*0.5);
+    const pm = Math.min(0.3, pct/100*0.3);
+    const sents = sentencesOf(t);
+    const out=[];
+    for (let i=0;i<sents.length;i++){
+      let s=sents[i];
+      if (Math.random()<ps && s.includes('，')) s = s.replace('，','。');
+      out.push(s);
+      if (Math.random()<pm && i<sents.length-1){
+        out[out.length-1] = replaceAllSafe(out[out.length-1].replace(/[。!?！？]$/,''),'。','') + '，' + sents[++i];
+      }
+    }
+    return out.join(' ');
+  }
+  function L_voice(t, pct, strict){
+    if (strict) return t;
+    const p = Math.min(0.35, pct/100*0.35);
+    return sentencesOf(t).map(s=>{
+      if (Math.random()>p) return s;
+      // 陈述 -> 反问（温和）
+      if (/[^吗\?\？！!]。$/.test(s)) return s.replace(/。$/,'吗？');
+      return s;
+    }).join(' ');
+  }
+  function L_synonym(t, pct){
+    const p = Math.min(0.6, pct/100*0.6);
+    let out = t;
+    Object.keys(SYN).forEach(k=>{
+      if (Math.random()<p){ const rep = pick(SYN[k]); out = replaceAllSafe(out, k, rep); }
+    });
+    return out;
+  }
+  function L_generalize(t, pct, reversible){
+    const mark = (orig, rep)=> reversible ? `⟦G:${orig}→${rep}⟧${rep}` : rep;
+    let out = t;
+    // 邮箱
+    out = out.replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, m=>mark(m,'某邮箱'));
+    // 电话
+    out = out.replace(/\+?\d[\d\s-]{6,}\d/g, m=>mark(m,'某电话'));
+    // 日期（粗略）
+    out = out.replace(/(\d{4}[年\/-]\d{1,2}(?:[月\/-]\d{1,2}日?)?)|(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})/g, m=>mark(m,'某日期'));
+    // 地名/机构（粗略）
+    out = out.replace(/([\u4e00-\u9fa5]{2,10})(公司|集团|研究院|大学)/g, m=>mark(m,'某机构'));
+    out = out.replace(/([\u4e00-\u9fa5]{2,10})(省|市|区|县|镇)/g, m=>mark(m,'某地'));
+    // 人名（英文两词首大写）
+    out = out.replace(/\b([A-Z][a-z]+\s+[A-Z][a-z]+)\b/g, m=>mark(m,'某人'));
+    // 大数字
+    out = out.replace(/\b\d{3,}\b/g, m=> (Math.random()<0.5? mark(m,'若干'):m));
+    return out;
+  }
+  function L_quote(t, pct){
+    const p = Math.min(0.5, pct/100*0.5);
+    return t.replace(/“([^”]{3,120})”/g, (m,inner)=> Math.random()>p ? m : inner+'（据称）')
+            .replace(/"([^"]{3,120})"/g, (m,inner)=> Math.random()>p ? m : inner+' (allegedly)');
+  }
+  function L_mixlang(t, pct, reversible){
+    const p = Math.min(0.5, pct/100*0.5);
+    let out = t;
+    Object.keys(CN2EN).forEach(k=>{
+      if (Math.random()<p){
+        const rep = `${k}(${CN2EN[k]})`;
+        out = reversible ? replaceAllSafe(out, k, `⟦ML:${k}→${CN2EN[k]}⟧${rep}`) : replaceAllSafe(out, k, rep);
+      }
+    });
+    return out;
+  }
+  function L_styleblur(t, pct, reversible){
+    const openers = ['先给出结论：','霓虹雨落下的晚上，','据不完全统计，','有趣的是，'];
+    const closers = ['——故事还没结束。','这只是开始。','以上，供参考。','细节略去一万字。'];
+    const p = Math.min(0.6, pct/100*0.6);
+    let out = t;
+    const sents = sentencesOf(out);
+    if (sents.length>0 && Math.random()<p){ sents[0] = (reversible? '⟦O:mix⟧':'') + pick(openers) + ' ' + sents[0]; }
+    if (Math.random()<p){ sents[sents.length-1] = sents[sents.length-1] + ' ' + (reversible? '⟦C:mix⟧':'') + pick(closers); }
+    return sents.join(' ');
+  }
+  function L_punct(t, pct){
+    const P = ['!','!!','!!!','...','?!','!?','??'];
+    return t.replace(/[。.!！?？]+/g, m => (Math.random()*100 < pct ? ' '+pick(P)+' ' : m));
+  }
+  function L_emoji(t, pct){
+    return t.replace(/([。.!！?？]+)(\s|$)/g, (m,p,sp)=> (Math.random()*100 < pct ? p+' '+pick(EMOJIS)+(sp||'') : m));
+  }
+
+  // ---------- decode ----------
+  function decodeText(t){
+    let out = t;
+    // 去零宽
+    out = out.replace(/\u200b/g,'');
+    // 去标记
+    out = out.replace(/⟦B64⟧([\s\S]*?)⟦\/B64⟧/g, (m,b64)=>{ try{return b64DecodeUTF8(b64);}catch(e){return b64;} });
+    out = out.replace(/⟦ML:([^→]+)→([^⟧]+)⟧/g, '');
+    out = out.replace(/⟦G:([^→]+)→([^⟧]+)⟧/g, '');
+    out = out.replace(/⟦[OC]:[^\u3000⟧]+⟧/g,'');
+    // 还原同形
+    const REV = {}; Object.keys(HOMO).forEach(k=>REV[HOMO[k]]=k);
+    out = out.split('').map(ch => REV[ch] || ch).join('');
+    // 简单统一标点
+    out = out.replace(/[!?！？]+/g,'。').replace(/\.{2,}|…+/g,'。');
+    // 去尾部meta/标签（保守）
+    out = out.replace(/\s*#\S+.*$/m,'');
+    return out.trim();
+  }
+
+  // ---------- pipeline ----------
+  function pipeline(text){
+    const pct = +$('#intensity').value;
+    const reversible = $('#reversible').checked;
+    const strict = $('#strictMode').checked;
+    const use = k => state.layers.has(k);
+    let out = text;
+
+    // 字符层
+    if (use('zerowidth')) out = L_zerowidth(out, pct);
+    if (use('homoglyph')) out = L_homoglyph(out, pct);
+    if (use('escape')) out = L_escape(out, pct, reversible);
+
+    // 语义/句法
+    if (use('synonym')) out = L_synonym(out, strict? Math.min(pct,35):pct);
+    if (use('generalize')) out = L_generalize(out, pct, reversible);
+    if (use('quote')) out = L_quote(out, pct);
+    if (use('reorder')) out = L_reorder(out, pct);
+    if (use('splitmerge')) out = L_splitmerge(out, pct);
+    if (use('voice')) out = L_voice(out, pct, strict);
+
+    // 样式
+    if (use('mixlang')) out = L_mixlang(out, pct, reversible);
+    if (use('styleblur')) out = L_styleblur(out, pct, reversible);
+
+    // 噪声
+    if (use('punct')) out = L_punct(out, pct);
+    if (use('emoji')) out = L_emoji(out, pct);
+
+    const meta = `layers=[${Array.from(state.layers).join(',')}] reversible=${reversible} strict=${strict}`;
+    return {out, meta};
+  }
+
+  // ---------- inputs/outputs ----------
+  function readText(){ return state.rich ? $('#inputRich').innerText : $('#input').value; }
+  function writeOutText(s){ $('#output').textContent = s; }
+  function writeOutHTML(s){ $('#output').innerHTML = s; }
+
+  // ---------- buttons ----------
+  $('#btnRun').addEventListener('click',()=>{
+    const src = readText().trim(); if (!src) return toast('请输入文本');
+    const {out, meta} = pipeline(src);
+    writeOutText(out); $('#meta').textContent = meta;
+  });
+  $('#btnDecode').addEventListener('click',()=>{
+    const src = readText().trim(); if (!src) return toast('请输入文本');
+    writeOutText(decodeText(src)); $('#meta').textContent='';
+  });
+  $('#btnAnalyze').addEventListener('click',()=>{
+    const s = readText(); if (!s.trim()) return toast('请输入文本');
+    const cn = s.match(/[\u4e00-\u9fa5]{1,2}/g) || [];
+    const en = s.match(/[A-Za-z]{3,}/g) || [];
+    const all = cn.concat(en); const map={};
+    all.forEach(w=>map[w]=(map[w]||0)+1);
+    const arr = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,40);
+    $('#cloud').innerHTML = arr.map(([w,c])=>`<span class="tag">${w}:${c}</span>`).join(' ');
+  });
+  $('#btnCopy').addEventListener('click', async()=>{
+    const txt = $('#output').innerText || ''; if (!txt) return toast('无可复制内容');
+    try{ await navigator.clipboard.writeText(txt); toast('已复制'); }catch{ toast('复制失败'); }
+  });
+  $('#btnClear').addEventListener('click',()=>{
+    $('#input').value=''; $('#inputRich').innerHTML=''; $('#output').innerHTML=''; $('#meta').textContent=''; $('#cloud').innerHTML='';
+  });
+
+  // 简单自检：避免脚本语法错误导致按钮失效
+  try{ 'test'.split('t').join('T'); }catch(e){ alert('环境不支持必要API'); }
+});
+</script>
+</body>
+</html>

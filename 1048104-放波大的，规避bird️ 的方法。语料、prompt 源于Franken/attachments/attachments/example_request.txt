@@ -1,0 +1,15 @@
+示例：把小说文件处理成 JSONL 的一次性请求示例（复制并替换文件名）
+
+我已上传： 《你贩剑，我发癫，联手整顿娱乐圈》作者：山外-.txt
+请处理为 Frankentexts snippets 并返回 JSONL。
+输出格式：jsonl
+max_tokens：512
+min_tokens：20
+sample_k：1500
+dedup：yes
+language：zh
+method：hybrid
+preserve：keep_dialogue, remove_chapter_titles, strip_headers_footers
+tokenizer：auto
+输出字段：id,text,tokens,source
+其它：无

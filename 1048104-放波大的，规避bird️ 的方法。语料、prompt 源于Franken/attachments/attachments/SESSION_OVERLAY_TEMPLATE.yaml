@@ -1,0 +1,67 @@
+===== SESSION-OVERLAY START =====
+overlay_id: "HP-V1-batch1"
+universe: HP
+pack_map_active:
+  "06": "06_Pack_Frag_Vol1_1.md"
+  "07": "07_Pack_Frag_Vol1_2.md"
+  "08": "08_Pack_Frag_Vol1_3.md"
+  "09": "09_Pack_Frag_Vol1_4.md"
+  "10": "10_Pack_Frag_Vol1_5.md"
+# === Mainline + Seasoning knobs ===
+policy:
+  copy_ratio_target_p: 0.92
+  copy_ratio_hard_min: 0.90
+  chapter_words_min: 2000
+  block_words_range: [600, 800]
+  system_c_budget_per_chapter: 100
+
+  # 来源偏好：原著与同人并举，但主线逻辑必取原著；同人为“调味”且占Q 50%±2%
+  source_weights:
+    原著: 1.00
+    同人: 1.00
+    自写: 0.85
+
+  quote_mix:
+    # fanfic（同人）在 Q 中的目标占比区间（章级）
+    fanfic_q_ratio_target: [0.48, 0.52]
+    primary_source_prefer: ["原著"]           # 主引用依然优先来自原著（负责推进主线）
+    max_secondary_from_same_source: 1
+    max_consecutive_primary_from_same_pack: 2
+
+  # 调味随机化参数
+  seasoning:
+    rng_seed: "auto"
+    jitter_strength: 0.50                      # 50% 抖动，促进多样化
+    strategies: ["相邻呼应","对比镜头","微伏笔","口头禅纹理"]
+    placement_rules:
+      prefer_beats: ["铺垫","转折","余韵"]
+      avoid_beats: ["核心转折","结局硬节点"]
+
+  # 多源均衡（避免只用一本同人）
+  multi_source_balance:
+    fanfic:
+      per_chapter_max_from_single_doc_q_ratio: 0.12   # 单一同人文占章级 Q 的上限（12%）
+      min_unique_docs_per_chapter: 5                   # 每章至少来自5个不同同人文
+      min_unique_authors_per_chapter: 3                # 至少3位不同作者
+      max_consecutive_from_same_doc: 1                 # 禁止同一同人文连续引用
+      sampling: "uniform_without_replacement"          # 均匀采样（先不放回直到达标）
+
+  # 反同构与去重
+  anti_clone:
+    window_no_repeat_blocks: 4
+    window_no_repeat_beats: 2
+    max_from_same_chapter: 2              # 同一原著章内的FRAG，单块最多2条
+    cross_pack_skip_rate: 0.20            # 20% 概率跳过“过度相似”的候选
+    shingle:
+      ngram_chars: 18                     # 以18字片段为近似指纹
+      reject_if_seen_in_recent_blocks: true
+
+  # 流畅性与桥接
+  fluency:
+    connectors_whitelist: ["然而","于是","与此同时","随后","因此","同样","最终","总之","相比之下","话说回来"]
+    allow_micro_C_when_needed: true       # 允许微量【[C]】桥接来保证可读性（仍受C预算约束）
+qc_overrides:
+  - term: "魁地奇"
+    prefer: "魁地奇"
+    aliases: ["魁地奇赛"]
+===== SESSION-OVERLAY END =====

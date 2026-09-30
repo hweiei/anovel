@@ -1,0 +1,31 @@
+01_Pack_Base_Bible.md
+  ├─ 系列圣经全文
+  ├─ K=5 圣经摘要
+  ├─ 合规/OC/不引/复制率规则
+  └─ 连接词白名单
+
+02_Pack_Characters_All.md
+  ├─ [UNI=HP] 固定角色卡…
+  ├─ [UNI=MCU] 固定角色卡…
+  ├─ [UNI=LOTR] 固定角色卡…
+  └─ [OC] 你的原创主角（穿越/重生：起点/嵌入点/边界/独有语气）
+
+03_Pack_Timeline_All.md
+  ├─ [UNI=HP] 卷级/章级锚点（【不可改动】/【允许改写】）
+  ├─ [UNI=MCU] …
+  └─ [UNI=…] …
+
+04_Pack_Glossary_All.md
+  ├─ [UNI=HP] 术语/专名（含别名/统一拼写）
+  ├─ [UNI=MCU] …
+  └─ [映射矩阵] 跨宇宙等价项（示例：魔咒↔科技装置；学院阶层↔军衔）
+
+05_Pack_Index_All.md
+  └─ 全片段索引清单（片段ID → 包名/页内锚点/UNI/关键词）
+
+06–10：轮换包（针对当前宇宙集装载，建议每包 ≤ 2–3 万字）
+06_Pack_Frag_UNI_A_1.md
+07_Pack_Frag_UNI_A_2.md
+08_Pack_Frag_UNI_A_3.md
+09_Pack_Frag_UNI_B_1.md
+10_Pack_Frag_UNI_B_2.md

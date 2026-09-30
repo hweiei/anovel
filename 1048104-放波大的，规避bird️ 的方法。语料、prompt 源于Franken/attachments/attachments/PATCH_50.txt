@@ -1,0 +1,1 @@
+升级：fanfic_q_ratio_target -> 50%±2%；新增 multi_source_balance / fluency / shingle；新增命令与审计。
